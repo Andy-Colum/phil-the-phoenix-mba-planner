@@ -3,11 +3,26 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { GraduationCap, MessageSquare, ArrowRight } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { 
+  GraduationCap, 
+  Moon, 
+  Sun, 
+  Briefcase,
+  ChartBar,
+  Rocket,
+  Target,
+  Database,
+  Globe,
+  MessageSquare,
+  ArrowRight
+} from "lucide-react";
 
 const Index = () => {
   const [message, setMessage] = useState("");
   const [chatStarted, setChatStarted] = useState(false);
+  const [programType, setProgramType] = useState("");
+  const [focusArea, setFocusArea] = useState("");
 
   const handleStartChat = () => {
     setChatStarted(true);
@@ -15,8 +30,7 @@ const Index = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // This will be implemented when we connect to the AI service
-    console.log("Message submitted:", message);
+    console.log("Submitted:", { programType, focusArea, message });
   };
 
   return (
@@ -53,8 +67,8 @@ const Index = () => {
             </CardContent>
           </Card>
 
-          {/* Middle Section */}
-          <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300">
+          {/* Middle Section - Elongated */}
+          <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 md:row-span-2">
             <CardHeader>
               <CardTitle className="text-2xl font-bold text-center">
                 Your MBA Journey Starts Here
@@ -73,29 +87,130 @@ const Index = () => {
                   <MessageSquare className="h-5 w-5" />
                 </Button>
               </div>
+              <div className="space-y-4 pt-4">
+                <h3 className="text-lg font-semibold text-gray-800">Why Choose Booth?</h3>
+                <ul className="space-y-3 text-gray-700">
+                  <li className="flex items-center gap-2">
+                    <GraduationCap className="h-5 w-5 text-[#ea384c]" />
+                    World-renowned faculty and research
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Target className="h-5 w-5 text-[#ea384c]" />
+                    Flexible curriculum tailored to your goals
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Globe className="h-5 w-5 text-[#ea384c]" />
+                    Global network and opportunities
+                  </li>
+                </ul>
+              </div>
             </CardContent>
           </Card>
 
-          {/* Right Section */}
+          {/* Right Section - Build Your MBA Career */}
           <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl font-bold">
-                Chat with Phil
+                Build Your MBA Career with Phil
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <Input
-                  placeholder="Share your career goals and interests..."
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  className="w-full"
-                />
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Step 1: Program Type */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Step 1: Select Your MBA Program</label>
+                  <Select onValueChange={setProgramType}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Choose your program" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="full-time">
+                        <span className="flex items-center gap-2">
+                          <GraduationCap className="h-4 w-4" />
+                          Full-Time MBA
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="evening">
+                        <span className="flex items-center gap-2">
+                          <Moon className="h-4 w-4" />
+                          Evening MBA
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="weekend">
+                        <span className="flex items-center gap-2">
+                          <Sun className="h-4 w-4" />
+                          Weekend MBA
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="executive">
+                        <span className="flex items-center gap-2">
+                          <Briefcase className="h-4 w-4" />
+                          Executive MBA
+                        </span>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Step 2: Focus Area */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Step 2: Select Your Focus Area</label>
+                  <Select onValueChange={setFocusArea}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Choose your focus" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="finance">
+                        <span className="flex items-center gap-2">
+                          <ChartBar className="h-4 w-4" />
+                          Finance & Accounting
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="entrepreneurship">
+                        <span className="flex items-center gap-2">
+                          <Rocket className="h-4 w-4" />
+                          Entrepreneurship & Innovation
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="marketing">
+                        <span className="flex items-center gap-2">
+                          <Target className="h-4 w-4" />
+                          Marketing & Strategy
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="analytics">
+                        <span className="flex items-center gap-2">
+                          <Database className="h-4 w-4" />
+                          Data Analytics & Tech
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="international">
+                        <span className="flex items-center gap-2">
+                          <Globe className="h-4 w-4" />
+                          International Business
+                        </span>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Additional Message Input */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Tell Phil more about your goals</label>
+                  <Input
+                    placeholder="Share your career goals and interests..."
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+
                 <Button 
                   type="submit"
-                  className="w-full bg-[#ea384c] hover:bg-[#d42d3d] text-white"
+                  className="w-full bg-[#ea384c] hover:bg-[#d42d3d] text-white font-semibold"
                 >
-                  <ArrowRight className="h-5 w-5" />
+                  Start Your Journey
+                  <ArrowRight className="h-5 w-5 ml-2" />
                 </Button>
               </form>
             </CardContent>
