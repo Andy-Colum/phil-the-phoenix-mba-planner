@@ -36,7 +36,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header Bar */}
       <header className="w-full bg-[#ea384c] shadow-md">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -50,7 +49,6 @@ const Index = () => {
 
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Left Section */}
           <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl font-bold text-[#ea384c]">
@@ -68,7 +66,6 @@ const Index = () => {
             </CardContent>
           </Card>
 
-          {/* Middle Section - Elongated */}
           <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 md:row-span-2">
             <CardHeader>
               <CardTitle className="text-2xl font-bold text-center">
@@ -108,16 +105,14 @@ const Index = () => {
             </CardContent>
           </Card>
 
-          {/* Right Section - Build Your MBA Career */}
           <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl font-bold">
-                Build Your MBA Career with Phil
+                Build Your Unique MBA Experience with Phil
               </CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Step 1: Program Type */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Step 1: Select Your MBA Program</label>
                   <Select onValueChange={setProgramType}>
@@ -153,7 +148,6 @@ const Index = () => {
                   </Select>
                 </div>
 
-                {/* Step 2: Focus Area */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Step 2: Select Your Focus Area</label>
                   <Select onValueChange={setFocusArea}>
@@ -201,7 +195,6 @@ const Index = () => {
                   </Select>
                 </div>
 
-                {/* Additional Message Input */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Tell Phil more about your goals</label>
                   <Input
