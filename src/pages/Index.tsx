@@ -21,6 +21,18 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Header Bar */}
+      <header className="w-full bg-[#ea384c] shadow-md">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <GraduationCap className="h-8 w-8 text-white" />
+              <h1 className="text-2xl font-bold text-white">Chicago Booth MBA</h1>
+            </div>
+          </div>
+        </div>
+      </header>
+
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Left Section */}
