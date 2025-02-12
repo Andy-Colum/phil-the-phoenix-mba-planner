@@ -1,8 +1,10 @@
+
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { 
   GraduationCap, 
   Moon, 
@@ -16,7 +18,8 @@ import {
   MessageSquare,
   ArrowRight,
   Users,
-  Building
+  Building,
+  Calendar
 } from "lucide-react";
 
 const Index = () => {
@@ -24,6 +27,9 @@ const Index = () => {
   const [chatStarted, setChatStarted] = useState(false);
   const [programType, setProgramType] = useState("");
   const [focusArea, setFocusArea] = useState("");
+  const [professionalGoals, setProfessionalGoals] = useState("");
+  const [extracurricularInterests, setExtracurricularInterests] = useState("");
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const handleStartChat = () => {
     setChatStarted(true);
@@ -31,7 +37,14 @@ const Index = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submitted:", { programType, focusArea, message });
+    setIsSheetOpen(true);
+    console.log("Submitted:", { 
+      programType, 
+      focusArea, 
+      message,
+      professionalGoals,
+      extracurricularInterests 
+    });
   };
 
   return (
@@ -196,11 +209,21 @@ const Index = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Tell Phil more about your goals</label>
+                  <label className="text-sm font-medium text-gray-700">Step 3: Tell Phil about your professional goals</label>
                   <Input
-                    placeholder="Share your career goals and interests..."
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="What do you hope to achieve with your MBA?"
+                    value={professionalGoals}
+                    onChange={(e) => setProfessionalGoals(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Step 4: Share your extracurricular interests</label>
+                  <Input
+                    placeholder="What activities, clubs, or experiences interest you?"
+                    value={extracurricularInterests}
+                    onChange={(e) => setExtracurricularInterests(e.target.value)}
                     className="w-full"
                   />
                 </div>
@@ -217,6 +240,71 @@ const Index = () => {
           </Card>
         </div>
       </div>
+
+      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+        <SheetContent side="right" className="w-full sm:w-[540px] overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Your Two-Year MBA Journey at Booth
+            </SheetTitle>
+          </SheetHeader>
+          
+          <div className="mt-6 space-y-8">
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Year 1</h3>
+              <div className="grid gap-4">
+                {["Autumn", "Winter", "Spring"].map((quarter) => (
+                  <div key={quarter} className="border rounded-lg p-4">
+                    <h4 className="font-medium mb-2">{quarter} Quarter</h4>
+                    <div className="space-y-2">
+                      <p className="text-sm text-gray-600">
+                        <span className="font-medium">Academic:</span> Core courses in {focusArea}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        <span className="font-medium">Professional:</span> Career workshops, networking events
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        <span className="font-medium">Extracurricular:</span> Student group activities, leadership opportunities
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Year 2</h3>
+              <div className="grid gap-4">
+                {["Autumn", "Winter", "Spring"].map((quarter) => (
+                  <div key={quarter} className="border rounded-lg p-4">
+                    <h4 className="font-medium mb-2">{quarter} Quarter</h4>
+                    <div className="space-y-2">
+                      <p className="text-sm text-gray-600">
+                        <span className="font-medium">Academic:</span> Advanced electives in {focusArea}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        <span className="font-medium">Professional:</span> Internship opportunities, career transitions
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        <span className="font-medium">Extracurricular:</span> Club leadership, community impact
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+              <h4 className="font-medium mb-2">AI-Generated Insights</h4>
+              <p className="text-sm text-gray-600">
+                Based on your interests in {focusArea} and {extracurricularInterests}, 
+                here are some recommended courses and activities tailored to your goals: {professionalGoals}
+              </p>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };
