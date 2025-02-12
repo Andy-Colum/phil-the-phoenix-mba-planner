@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -242,7 +241,10 @@ const Index = () => {
       </div>
 
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent side="right" className="w-full sm:w-[540px] overflow-y-auto">
+        <SheetContent 
+          side="bottom" 
+          className="w-[90%] sm:w-[540px] h-[80vh] fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg overflow-y-auto animate-scale-in"
+        >
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
@@ -255,7 +257,7 @@ const Index = () => {
               <h3 className="text-lg font-semibold mb-4">Year 1</h3>
               <div className="grid gap-4">
                 {["Autumn", "Winter", "Spring"].map((quarter) => (
-                  <div key={quarter} className="border rounded-lg p-4">
+                  <div key={quarter} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
                     <h4 className="font-medium mb-2">{quarter} Quarter</h4>
                     <div className="space-y-2">
                       <p className="text-sm text-gray-600">
@@ -277,7 +279,7 @@ const Index = () => {
               <h3 className="text-lg font-semibold mb-4">Year 2</h3>
               <div className="grid gap-4">
                 {["Autumn", "Winter", "Spring"].map((quarter) => (
-                  <div key={quarter} className="border rounded-lg p-4">
+                  <div key={quarter} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
                     <h4 className="font-medium mb-2">{quarter} Quarter</h4>
                     <div className="space-y-2">
                       <p className="text-sm text-gray-600">
