@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -15,7 +14,9 @@ import {
   Database,
   Globe,
   MessageSquare,
-  ArrowRight
+  ArrowRight,
+  Users,
+  Building
 } from "lucide-react";
 
 const Index = () => {
@@ -163,31 +164,37 @@ const Index = () => {
                       <SelectItem value="finance">
                         <span className="flex items-center gap-2">
                           <ChartBar className="h-4 w-4" />
-                          Finance & Accounting
-                        </span>
-                      </SelectItem>
-                      <SelectItem value="entrepreneurship">
-                        <span className="flex items-center gap-2">
-                          <Rocket className="h-4 w-4" />
-                          Entrepreneurship & Innovation
+                          Finance
                         </span>
                       </SelectItem>
                       <SelectItem value="marketing">
                         <span className="flex items-center gap-2">
                           <Target className="h-4 w-4" />
-                          Marketing & Strategy
+                          Marketing
                         </span>
                       </SelectItem>
-                      <SelectItem value="analytics">
+                      <SelectItem value="operations">
                         <span className="flex items-center gap-2">
-                          <Database className="h-4 w-4" />
-                          Data Analytics & Tech
+                          <Briefcase className="h-4 w-4" />
+                          Operations
                         </span>
                       </SelectItem>
-                      <SelectItem value="international">
+                      <SelectItem value="strategy">
                         <span className="flex items-center gap-2">
-                          <Globe className="h-4 w-4" />
-                          International Business
+                          <Rocket className="h-4 w-4" />
+                          Strategy
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="leadership">
+                        <span className="flex items-center gap-2">
+                          <Users className="h-4 w-4" />
+                          Leadership & Management
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="business-environment">
+                        <span className="flex items-center gap-2">
+                          <Building className="h-4 w-4" />
+                          Business Environment
                         </span>
                       </SelectItem>
                     </SelectContent>
