@@ -34,8 +34,6 @@ const Index = () => {
   const [Extracurricular_Interests, setExtracurricular_Interests] = useState("");
 
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [mbaSchedule, setMBASchedule] = useState(defaultMBAData);
-  const [isGenerating, setIsGenerating] = useState(false);
 
   const defaultMBAData = {
     Year_1: {
@@ -229,67 +227,7 @@ const Index = () => {
       return;
     }
 
-    setIsGenerating(true);
-
-    try {
-      const prompt = `Generate a personalized MBA journey for a ${MBA_Program_Type} student focusing on ${MBA_Focus_Area}. 
-        Their professional goals are: ${Professional_Goals}. 
-        Their extracurricular interests include: ${Extracurricular_Interests}`;
-
-      const response = await fetch('https://api.dify.ai/v1/chat-messages', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer app-BMVzb50wyz8hw04pC90s3Rig',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          inputs: {},
-          query: prompt,
-          response_mode: "blocking",
-          conversation_id: "",
-          user: "booth-mba-user",
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`API responded with status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      if (data.answer) {
-        try {
-          const parsedOutput = JSON.parse(data.answer);
-          if (typeof parsedOutput === 'string') {
-            const schedule = JSON.parse(parsedOutput);
-            setMBASchedule(schedule);
-            setIsSheetOpen(true);
-          } else if (parsedOutput.output) {
-            const schedule = JSON.parse(parsedOutput.output);
-            setMBASchedule(schedule);
-            setIsSheetOpen(true);
-          } else {
-            throw new Error('Invalid response format');
-          }
-        } catch (error) {
-          console.error('Error parsing schedule:', error);
-          toast({
-            title: "Error",
-            description: "Unable to generate your MBA schedule. Please try again.",
-            variant: "destructive"
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Error generating schedule:', error);
-      toast({
-        title: "Error",
-        description: "Unable to generate your MBA schedule. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsGenerating(false);
-    }
+    setIsSheetOpen(true);
   };
 
   return (
@@ -505,19 +443,9 @@ const Index = () => {
                 <Button 
                   type="submit"
                   className="w-full bg-[#ea384c] hover:bg-[#d42d3d] text-white font-semibold"
-                  disabled={isGenerating}
                 >
-                  {isGenerating ? (
-                    <div className="flex items-center gap-2">
-                      <span className="animate-spin">⏳</span>
-                      Generating Your Journey...
-                    </div>
-                  ) : (
-                    <>
-                      Generate Your MBA Journey
-                      <ArrowRight className="h-5 w-5 ml-2" />
-                    </>
-                  )}
+                  Generate Your MBA Journey
+                  <ArrowRight className="h-5 w-5 ml-2" />
                 </Button>
               </form>
             </CardContent>
@@ -528,7 +456,7 @@ const Index = () => {
       <MBAJourney 
         isOpen={isSheetOpen}
         onOpenChange={setIsSheetOpen}
-        schedule={mbaSchedule}
+        schedule={defaultMBAData}
       />
     </div>
   );
