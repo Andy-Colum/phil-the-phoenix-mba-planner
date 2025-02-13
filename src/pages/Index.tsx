@@ -616,40 +616,34 @@ const Index = () => {
                       <SelectValue placeholder="Choose your focus" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Finance_Accounting">
+                      <SelectItem value="Finance">
                         <span className="flex items-center gap-2">
-                          <LineChart className="h-4 w-4" />
-                          Finance & Accounting
+                          <GraduationCap className="h-4 w-4" />
+                          Finance
                         </span>
                       </SelectItem>
-                      <SelectItem value="Entrepreneurship_Innovation">
+                      <SelectItem value="Marketing">
                         <span className="flex items-center gap-2">
-                          <Rocket className="h-4 w-4" />
-                          Entrepreneurship & Innovation
+                          <Briefcase className="h-4 w-4" />
+                          Marketing
                         </span>
                       </SelectItem>
-                      <SelectItem value="Marketing_Strategy">
+                      <SelectItem value="Entrepreneurship">
                         <span className="flex items-center gap-2">
-                          <Target className="h-4 w-4" />
-                          Marketing & Strategy
+                          <Sun className="h-4 w-4" />
+                          Entrepreneurship
                         </span>
                       </SelectItem>
-                      <SelectItem value="Data_Analytics_Tech">
+                      <SelectItem value="Strategy">
                         <span className="flex items-center gap-2">
-                          <Database className="h-4 w-4" />
-                          Data Analytics & Tech
+                          <Moon className="h-4 w-4" />
+                          Strategy
                         </span>
                       </SelectItem>
-                      <SelectItem value="International_Business">
+                      <SelectItem value="Operations">
                         <span className="flex items-center gap-2">
-                          <Globe className="h-4 w-4" />
-                          International Business
-                        </span>
-                      </SelectItem>
-                      <SelectItem value="Public_Policy_Impact">
-                        <span className="flex items-center gap-2">
-                          <Building className="h-4 w-4" />
-                          Public Policy & Impact
+                          <Briefcase className="h-4 w-4" />
+                          Operations
                         </span>
                       </SelectItem>
                     </SelectContent>
@@ -678,19 +672,16 @@ const Index = () => {
 
                 <Button 
                   type="submit"
-                  className="w-full bg-[#ea384c] hover:bg-[#d42d3d] text-white font-semibold"
+                  className="w-full bg-[#ea384c] hover:bg-[#d42d3d]"
                   disabled={isGenerating}
                 >
                   {isGenerating ? (
-                    <>
-                      <Loader className="h-5 w-5 animate-spin" />
-                      Generating Your MBA Journey...
-                    </>
+                    <div className="flex items-center gap-2">
+                      <span className="animate-spin">⌛</span>
+                      Generating...
+                    </div>
                   ) : (
-                    <>
-                      Generate Your MBA Journey
-                      <ArrowRight className="h-5 w-5 ml-2" />
-                    </>
+                    "Generate Your MBA Schedule"
                   )}
                 </Button>
               </form>
