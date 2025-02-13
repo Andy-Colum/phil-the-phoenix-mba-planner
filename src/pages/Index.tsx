@@ -59,6 +59,13 @@ const Index = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="overflow-hidden rounded-lg mb-4">
+                <img 
+                  src="/lovable-uploads/0261344b-60cc-467e-ad9f-073f06ddd882.png"
+                  alt="University of Chicago Campus Aerial View"
+                  className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
               <p className="text-gray-700">
                 The University of Chicago Booth School of Business offers an unparalleled MBA experience that transforms leaders and shapes global business.
               </p>
