@@ -22,7 +22,8 @@ import {
   Calendar,
   BookOpen,
   Laptop,
-  LineChart
+  LineChart,
+  Loader
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
@@ -34,6 +35,7 @@ const Index = () => {
   const [chatHistory, setChatHistory] = useState<Array<{ role: 'user' | 'assistant', content: string }>>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const [MBA_Program_Type, setMBA_Program_Type] = useState("");
   const [MBA_Focus_Area, setMBA_Focus_Area] = useState("");
@@ -317,6 +319,8 @@ const Index = () => {
       return;
     }
 
+    setIsGenerating(true);
+
     try {
       const response = await fetch('https://api.dify.ai/v1/workflows/run', {
         method: 'POST',
@@ -371,6 +375,8 @@ const Index = () => {
         description: "Unable to generate your MBA schedule. Please try again later.",
         variant: "destructive"
       });
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -735,9 +741,19 @@ const Index = () => {
                 <Button 
                   type="submit"
                   className="w-full bg-[#ea384c] hover:bg-[#d42d3d] text-white font-semibold"
+                  disabled={isGenerating}
                 >
-                  Generate Your MBA Journey
-                  <ArrowRight className="h-5 w-5 ml-2" />
+                  {isGenerating ? (
+                    <>
+                      <Loader className="h-5 w-5 mr-2 animate-spin" />
+                      Generating Your MBA Journey...
+                    </>
+                  ) : (
+                    <>
+                      Generate Your MBA Journey
+                      <ArrowRight className="h-5 w-5 ml-2" />
+                    </>
+                  )}
                 </Button>
               </form>
             </CardContent>
