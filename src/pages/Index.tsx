@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -5,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/lib/supabase";
 import { 
   GraduationCap, 
   Moon, 
@@ -20,21 +20,25 @@ import {
   ArrowRight,
   Users,
   Building,
-  Calendar
+  Calendar,
+  BookOpen,
+  Laptop,
+  LineChart
 } from "lucide-react";
 
 const Index = () => {
   const { toast } = useToast();
-  const [message, setMessage] = useState("");
-  const [chatStarted, setChatStarted] = useState(false);
-  const [programType, setProgramType] = useState("");
-  const [focusArea, setFocusArea] = useState("");
-  const [professionalGoals, setProfessionalGoals] = useState("");
-  const [extracurricularInterests, setExtracurricularInterests] = useState("");
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
+  const [chatStarted, setChatStarted] = useState(false);
   const [chatHistory, setChatHistory] = useState<Array<{ role: 'user' | 'assistant', content: string }>>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  // Updated state variables with consistent naming
+  const [MBA_Program_Type, setMBA_Program_Type] = useState("");
+  const [MBA_Focus_Area, setMBA_Focus_Area] = useState("");
+  const [Professional_Goals, setProfessional_Goals] = useState("");
+  const [Extracurricular_Interests, setExtracurricular_Interests] = useState("");
 
   const handleStartChat = () => {
     setChatStarted(true);
@@ -44,15 +48,18 @@ const Index = () => {
     }]);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSheetOpen(true);
-    console.log("Submitted:", { 
-      programType, 
-      focusArea, 
-      professionalGoals,
-      extracurricularInterests 
-    });
+    
+    const formData = {
+      MBA_Program_Type,
+      MBA_Focus_Area,
+      Professional_Goals,
+      Extracurricular_Interests
+    };
+    
+    console.log("Form Data:", formData);
   };
 
   const handleSendMessage = async (e: React.FormEvent) => {
@@ -62,7 +69,6 @@ const Index = () => {
     const userMessage = chatMessage.trim();
     setChatMessage("");
     
-    // Add user message to chat history
     setChatHistory(prev => [...prev, { role: 'user', content: userMessage }]);
     
     setIsLoading(true);
@@ -223,30 +229,30 @@ const Index = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Step 1: Select Your MBA Program</label>
-                  <Select onValueChange={setProgramType}>
+                  <Select onValueChange={setMBA_Program_Type} value={MBA_Program_Type}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Choose your program" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="full-time">
+                      <SelectItem value="Full_Time_MBA">
                         <span className="flex items-center gap-2">
                           <GraduationCap className="h-4 w-4" />
                           Full-Time MBA
                         </span>
                       </SelectItem>
-                      <SelectItem value="evening">
+                      <SelectItem value="Evening_MBA">
                         <span className="flex items-center gap-2">
                           <Moon className="h-4 w-4" />
                           Evening MBA
                         </span>
                       </SelectItem>
-                      <SelectItem value="weekend">
+                      <SelectItem value="Weekend_MBA">
                         <span className="flex items-center gap-2">
                           <Sun className="h-4 w-4" />
                           Weekend MBA
                         </span>
                       </SelectItem>
-                      <SelectItem value="executive">
+                      <SelectItem value="Executive_MBA">
                         <span className="flex items-center gap-2">
                           <Briefcase className="h-4 w-4" />
                           Executive MBA
@@ -258,45 +264,45 @@ const Index = () => {
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Step 2: Select Your Focus Area</label>
-                  <Select onValueChange={setFocusArea}>
+                  <Select onValueChange={setMBA_Focus_Area} value={MBA_Focus_Area}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Choose your focus" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="finance">
+                      <SelectItem value="Finance_Accounting">
                         <span className="flex items-center gap-2">
-                          <ChartBar className="h-4 w-4" />
-                          Finance
+                          <LineChart className="h-4 w-4" />
+                          Finance & Accounting
                         </span>
                       </SelectItem>
-                      <SelectItem value="marketing">
-                        <span className="flex items-center gap-2">
-                          <Target className="h-4 w-4" />
-                          Marketing
-                        </span>
-                      </SelectItem>
-                      <SelectItem value="operations">
-                        <span className="flex items-center gap-2">
-                          <Briefcase className="h-4 w-4" />
-                          Operations
-                        </span>
-                      </SelectItem>
-                      <SelectItem value="strategy">
+                      <SelectItem value="Entrepreneurship_Innovation">
                         <span className="flex items-center gap-2">
                           <Rocket className="h-4 w-4" />
-                          Strategy
+                          Entrepreneurship & Innovation
                         </span>
                       </SelectItem>
-                      <SelectItem value="leadership">
+                      <SelectItem value="Marketing_Strategy">
                         <span className="flex items-center gap-2">
-                          <Users className="h-4 w-4" />
-                          Leadership & Management
+                          <Target className="h-4 w-4" />
+                          Marketing & Strategy
                         </span>
                       </SelectItem>
-                      <SelectItem value="business-environment">
+                      <SelectItem value="Data_Analytics_Tech">
+                        <span className="flex items-center gap-2">
+                          <Laptop className="h-4 w-4" />
+                          Data Analytics & Tech
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="International_Business">
+                        <span className="flex items-center gap-2">
+                          <Globe className="h-4 w-4" />
+                          International Business
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="Public_Policy_Impact">
                         <span className="flex items-center gap-2">
                           <Building className="h-4 w-4" />
-                          Business Environment
+                          Public Policy & Impact
                         </span>
                       </SelectItem>
                     </SelectContent>
@@ -304,21 +310,21 @@ const Index = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Step 3: Tell Phil about your professional goals</label>
+                  <label className="text-sm font-medium text-gray-700">Step 3: Professional Goals</label>
                   <Input
                     placeholder="What do you hope to achieve with your MBA?"
-                    value={professionalGoals}
-                    onChange={(e) => setProfessionalGoals(e.target.value)}
+                    value={Professional_Goals}
+                    onChange={(e) => setProfessional_Goals(e.target.value)}
                     className="w-full"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Step 4: Share your extracurricular interests</label>
+                  <label className="text-sm font-medium text-gray-700">Step 4: Extracurricular Interests</label>
                   <Input
                     placeholder="What activities, clubs, or experiences interest you?"
-                    value={extracurricularInterests}
-                    onChange={(e) => setExtracurricularInterests(e.target.value)}
+                    value={Extracurricular_Interests}
+                    onChange={(e) => setExtracurricular_Interests(e.target.value)}
                     className="w-full"
                   />
                 </div>
@@ -357,7 +363,7 @@ const Index = () => {
                     <h4 className="font-medium mb-2">{quarter} Quarter</h4>
                     <div className="space-y-2">
                       <p className="text-sm text-gray-600">
-                        <span className="font-medium">Academic:</span> Core courses in {focusArea}
+                        <span className="font-medium">Academic:</span> Core courses in {MBA_Focus_Area?.replace(/_/g, ' ')}
                       </p>
                       <p className="text-sm text-gray-600">
                         <span className="font-medium">Professional:</span> Career workshops, networking events
@@ -379,7 +385,7 @@ const Index = () => {
                     <h4 className="font-medium mb-2">{quarter} Quarter</h4>
                     <div className="space-y-2">
                       <p className="text-sm text-gray-600">
-                        <span className="font-medium">Academic:</span> Advanced electives in {focusArea}
+                        <span className="font-medium">Academic:</span> Advanced electives in {MBA_Focus_Area?.replace(/_/g, ' ')}
                       </p>
                       <p className="text-sm text-gray-600">
                         <span className="font-medium">Professional:</span> Internship opportunities, career transitions
@@ -396,8 +402,8 @@ const Index = () => {
             <div className="mt-6 p-4 bg-gray-50 rounded-lg">
               <h4 className="font-medium mb-2">AI-Generated Insights</h4>
               <p className="text-sm text-gray-600">
-                Based on your interests in {focusArea} and {extracurricularInterests}, 
-                here are some recommended courses and activities tailored to your goals: {professionalGoals}
+                Based on your interests in {MBA_Focus_Area?.replace(/_/g, ' ')} and {Extracurricular_Interests}, 
+                here are some recommended courses and activities tailored to your goals: {Professional_Goals}
               </p>
             </div>
           </div>
