@@ -105,7 +105,6 @@ const Index = () => {
     }
   };
 
-  // Update the types to match the API response format
   type TermData = {
     Courses?: string[];
     Clubs?: string[];
@@ -137,7 +136,7 @@ const Index = () => {
     };
     
     try {
-      const response = await fetch('https://api.dify.ai/v1/chat-messages', {
+      const response = await fetch('https://api.dify.ai/v1/completion-messages', {
         method: 'POST',
         headers: {
           'Authorization': 'Bearer app-zA9ZDv20AN3bzw4fbTCis0KJ',
@@ -151,7 +150,6 @@ const Index = () => {
             Goals: ${Professional_Goals}, 
             Interests: ${Extracurricular_Interests}`,
           response_mode: "blocking",
-          conversation_id: "",
           user: "booth-mba-user",
         })
       });
@@ -163,9 +161,18 @@ const Index = () => {
       const data = await response.json();
       console.log("API Response:", data);
 
-      if (data.answer) {
-        // Here we'll need to parse the response - for now using sample data
-        console.log("LLM Response:", data.answer);
+      if (data.text) {
+        try {
+          const scheduleData = JSON.parse(data.text);
+          console.log("Parsed Schedule Data:", scheduleData);
+        } catch (parseError) {
+          console.error('Error parsing schedule JSON:', parseError);
+          toast({
+            title: "Error",
+            description: "Unable to process the schedule data. Please try again.",
+            variant: "destructive"
+          });
+        }
       }
     } catch (error) {
       console.error('Error fetching schedule:', error);
