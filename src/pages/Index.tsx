@@ -32,7 +32,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white flex flex-col">
       <header className="w-full bg-[#ea384c] shadow-md">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-center">
@@ -49,7 +49,7 @@ const Index = () => {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 flex-grow">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300">
             <CardHeader>
@@ -110,6 +110,14 @@ const Index = () => {
               />
             </CardContent>
           </Card>
+        </div>
+      </div>
+
+      <div className="w-full bg-gray-100 border-t border-gray-200 mt-8">
+        <div className="container mx-auto px-4 py-6">
+          <div className="max-w-3xl mx-auto text-sm text-gray-600 text-center leading-relaxed">
+            Hi, this is a website meant to showcase the functionality and potential of language models, as well as my personal interest in pursuing an MBA at Booth. This site is not intended for commercial use, nor is it an official or accurate representation of Booth in any way. It will be taken down after my interview period is over. Just a demonstration of what can be done today.
+          </div>
         </div>
       </div>
 
