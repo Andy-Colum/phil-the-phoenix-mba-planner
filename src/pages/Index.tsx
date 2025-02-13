@@ -391,6 +391,14 @@ const Index = () => {
   const TermBlock = ({ data, term }: { data: TermData | SummerData; term: string }) => {
     const isSummer = term === "Summer";
     
+    // Safety check - if we don't have data for this term, return null
+    if (!data) return null;
+
+    // Function to safely get data while handling unknown properties
+    const safelyGetData = (obj: any, path: string[], defaultValue: any = null) => {
+      return path.reduce((acc, key) => (acc && acc[key] !== undefined ? acc[key] : defaultValue), obj);
+    };
+    
     return (
       <Collapsible className="w-full">
         <CollapsibleTrigger className="w-full">
@@ -406,7 +414,8 @@ const Index = () => {
                 <h5 className="font-medium text-sm text-gray-700 mb-2">Courses</h5>
                 <div className="space-y-3">
                   {(['Course_1', 'Course_2', 'Course_3'] as const).map((courseKey) => {
-                    const course = (data as TermData)[courseKey];
+                    const course = safelyGetData(data, [courseKey], { name: '', description: '' });
+                    if (!course.name) return null;
                     return (
                       <div key={courseKey} className="bg-white p-3 rounded-lg shadow-sm">
                         <div className="flex items-center gap-2">
@@ -422,7 +431,7 @@ const Index = () => {
               <div>
                 <h5 className="font-medium text-sm text-gray-700 mb-2">Clubs</h5>
                 <ul className="space-y-2">
-                  {(data as TermData).Club_Options.map((club, idx) => (
+                  {safelyGetData(data, ['Club_Options'], []).map((club: string, idx: number) => (
                     <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
                       <Users className="h-4 w-4" />
                       {club}
@@ -433,7 +442,7 @@ const Index = () => {
               <div>
                 <h5 className="font-medium text-sm text-gray-700 mb-2">Events</h5>
                 <ul className="space-y-2">
-                  {(data as TermData).Events.map((event, idx) => (
+                  {safelyGetData(data, ['Events'], []).map((event: string, idx: number) => (
                     <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
                       <Calendar className="h-4 w-4" />
                       {event}
@@ -445,15 +454,17 @@ const Index = () => {
           ) : (
             <div>
               <h5 className="font-medium text-sm text-gray-700 mb-2">Internship</h5>
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <div className="flex items-center gap-2">
-                  <Briefcase className="h-4 w-4 text-[#ea384c]" />
-                  <h6 className="font-medium">{(data as SummerData).Internship.name}</h6>
+              {safelyGetData(data, ['Internship'], null) && (
+                <div className="bg-white p-3 rounded-lg shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <Briefcase className="h-4 w-4 text-[#ea384c]" />
+                    <h6 className="font-medium">{safelyGetData(data, ['Internship', 'name'], '')}</h6>
+                  </div>
+                  <p className="text-sm text-gray-600 mt-1 ml-6">
+                    {safelyGetData(data, ['Internship', 'description'], '')}
+                  </p>
                 </div>
-                <p className="text-sm text-gray-600 mt-1 ml-6">
-                  {(data as SummerData).Internship.description}
-                </p>
-              </div>
+              )}
             </div>
           )}
         </CollapsibleContent>
