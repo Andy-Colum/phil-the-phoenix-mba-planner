@@ -137,7 +137,7 @@ const Index = () => {
     };
     
     try {
-      const response = await fetch('https://api.dify.ai/v1/workflows', {
+      const response = await fetch('https://api.dify.ai/v1/', {
         method: 'POST',
         headers: {
           'Authorization': 'Bearer app-zA9ZDv20AN3bzw4fbTCis0KJ',
