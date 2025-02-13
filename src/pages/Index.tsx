@@ -167,7 +167,7 @@ const Index = () => {
       const response = await fetch('https://api.dify.ai/v1/workflows/run', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${workflowKey.value}`,
+          'Authorization': workflowKey.value,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -183,7 +183,9 @@ const Index = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`API responded with status: ${response.status}`);
+        const errorData = await response.json();
+        console.error('API Error:', errorData);
+        throw new Error(`API error: ${errorData.message || response.statusText}`);
       }
 
       const data = await response.json();
@@ -219,7 +221,7 @@ const Index = () => {
       console.error('Error:', error);
       toast({
         title: "Error",
-        description: "Unable to generate your MBA schedule. Please try again later.",
+        description: error instanceof Error ? error.message : "Unable to generate your MBA schedule. Please try again later.",
         variant: "destructive"
       });
     } finally {
@@ -402,7 +404,7 @@ const Index = () => {
       const response = await fetch('https://api.dify.ai/v1/chat-messages', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${chatKey.value}`,
+          'Authorization': chatKey.value,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -415,7 +417,9 @@ const Index = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`Dify API responded with status: ${response.status}`);
+        const errorData = await response.json();
+        console.error('API Error:', errorData);
+        throw new Error(`API error: ${errorData.message || response.statusText}`);
       }
 
       const data = await response.json();
@@ -432,7 +436,7 @@ const Index = () => {
       console.error('Error sending message:', error);
       toast({
         title: "Error",
-        description: "Unable to connect to the chat service. Please try again later.",
+        description: error instanceof Error ? error.message : "Unable to connect to the chat service. Please try again later.",
         variant: "destructive"
       });
       setChatHistory(prev => [...prev, { 
