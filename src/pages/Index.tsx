@@ -231,21 +231,22 @@ const Index = () => {
     setIsGenerating(true);
 
     const requestBody = {
-      query: MBA_Program_Type,
       inputs: {
         program_type: MBA_Program_Type,
         focus_area: MBA_Focus_Area,
         professional_goals: Professional_Goals,
         extracurricular_interests: Extracurricular_Interests
       },
+      query: `Generate an MBA schedule for a ${MBA_Program_Type} student focusing on ${MBA_Focus_Area} with professional goals: ${Professional_Goals} and interests in: ${Extracurricular_Interests}`,
       response_mode: "blocking",
+      conversation_id: "",
       user: "booth-mba-user"
     };
 
     console.log('Request body being sent to API:', JSON.stringify(requestBody, null, 2));
 
     try {
-      const response = await fetch('https://api.dify.ai/v1/workflows/run', {
+      const response = await fetch('https://api.dify.ai/v1/completion-messages', {
         method: 'POST',
         headers: {
           'Authorization': 'Bearer app-BMVzb50wyz8hw04pC90s3Rig',
@@ -263,22 +264,21 @@ const Index = () => {
       const data = await response.json();
       console.log('API Response:', JSON.stringify(data, null, 2));
       
-      if (data.data && data.data.status === 'succeeded' && data.data.outputs) {
+      if (data.answer) {
         try {
-          const outputText = data.data.outputs.text;
-          
           let parsedResponse;
           try {
-            parsedResponse = typeof outputText === 'string' ? JSON.parse(outputText) : outputText;
+            parsedResponse = JSON.parse(data.answer);
+            setMBASchedule(parsedResponse);
+            setIsSheetOpen(true);
           } catch (parseError) {
-            console.error('Error parsing output text:', parseError);
-            parsedResponse = outputText;
+            console.error('Response is not JSON:', parseError);
+            // If it's not JSON, show it as a chat message
+            setChatHistory(prev => [...prev, { 
+              role: 'assistant', 
+              content: data.answer
+            }]);
           }
-
-          setChatHistory(prev => [...prev, { 
-            role: 'assistant', 
-            content: typeof parsedResponse === 'string' ? parsedResponse : JSON.stringify(parsedResponse, null, 2)
-          }]);
 
           toast({
             title: "Success",
@@ -292,13 +292,11 @@ const Index = () => {
             variant: "destructive"
           });
         }
-      } else if (data.data && data.data.status === 'failed') {
-        throw new Error(data.data.error || 'Workflow execution failed');
       } else {
-        throw new Error('Invalid workflow response format');
+        throw new Error('No answer received from API');
       }
     } catch (error) {
-      console.error('Error with workflow:', error);
+      console.error('Error with API:', error);
       toast({
         title: "Error",
         description: "Unable to generate response. Please try again later.",
