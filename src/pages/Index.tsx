@@ -472,133 +472,35 @@ const Index = () => {
       });
 
       const response = await fetch('https://api.dify.ai/v1/chat-messages', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${chatKey.value.trim()}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          inputs: {},
-          query: userMessage,
-          response_mode: "blocking",
-          conversation_id: "",
-          user: "booth-mba-user",
-        })
-      });
+        method: 'POST',\n        headers: {\n          'Authorization': `Bearer ${chatKey.value.trim()}`,\n          'Content-Type': 'application/json'\n        },\n        body: JSON.stringify({\n          inputs: {},\n          query: userMessage,\n          response_mode: \"blocking\",\n          conversation_id: \"\",\n          user: \"booth-mba-user\",\n        })\n      });
 
       console.log('Chat API Response Status:', response.status);
       console.log('Chat API Response Status Text:', response.statusText);
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('Chat API Error Details:', {
-          status: response.status,
-          statusText: response.statusText,
-          errorData
-        });
+        console.error('Chat API Error Details:', {\n          status: response.status,\n          statusText: response.statusText,\n          errorData\n        });
         throw new Error(`API error: ${errorData.message || response.statusText}`);
       }
 
       const data = await response.json();
       
       if (data.answer) {
-        setChatHistory(prev => [...prev, { 
-          role: 'assistant', 
-          content: data.answer 
-        }]);
+        setChatHistory(prev => [...prev, { \n          role: 'assistant', \n          content: data.answer \n        }]);
       } else {
         throw new Error('No answer received from API');
       }
     } catch (error) {
       console.error('Error sending message:', error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Unable to connect to the chat service. Please try again later.",
-        variant: "destructive"
-      });
-      setChatHistory(prev => [...prev, { 
-        role: 'assistant', 
-        content: "I apologize, but I'm having trouble connecting right now. Please try again later." 
-      }]);
+      toast({\n        title: \"Error\",\n        description: error instanceof Error ? error.message : \"Unable to connect to the chat service. Please try again later.\",\n        variant: \"destructive\"\n      });
+      setChatHistory(prev => [...prev, { \n        role: 'assistant', \n        content: \"I apologize, but I'm having trouble connecting right now. Please try again later.\" \n      }]);
     } finally {
       setIsLoading(false);
     }
   };
 
   const parseDifyResponse = (output: string): MBASchedule => {
-    const schedule: MBASchedule = {
-      Year_1: {
-        Autumn: { Course_1: { name: "", description: "" }, Course_2: { name: "", description: "" }, Course_3: { name: "", description: "" }, Club_Options: [], Events: [] },
-        Winter: { Course_1: { name: "", description: "" }, Course_2: { name: "", description: "" }, Course_3: { name: "", description: "" }, Club_Options: [], Events: [] },
-        Spring: { Course_1: { name: "", description: "" }, Course_2: { name: "", description: "" }, Course_3: { name: "", description: "" }, Club_Options: [], Events: [] },
-        Summer: { Internship: { name: "", description: "" } }
-      },
-      Year_2: {
-        Autumn: { Course_1: { name: "", description: "" }, Course_2: { name: "", description: "" }, Course_3: { name: "", description: "" }, Club_Options: [], Events: [] },
-        Winter: { Course_1: { name: "", description: "" }, Course_2: { name: "", description: "" }, Course_3: { name: "", description: "" }, Club_Options: [], Events: [] },
-        Spring: { Course_1: { name: "", description: "" }, Course_2: { name: "", description: "" }, Course_3: { name: "", description: "" }, Club_Options: [], Events: [] },
-        Summer: { Internship: { name: "", description: "" } }
-      }
-    };
-
-    const lines = output.split('\n');
-    let currentYear: 'Year_1' | 'Year_2' | null = null;
-    let currentTerm: 'Autumn' | 'Winter' | 'Spring' | 'Summer' | null = null;
-    let currentSection: 'courses' | 'clubs' | 'events' | 'internship' | null = null;
-
-    for (let line of lines) {
-      line = line.trim();
-      
-      if (line.startsWith('Year 1:')) {
-        currentYear = 'Year_1';
-      } else if (line.startsWith('Year 2:')) {
-        currentYear = 'Year_2';
-      } else if (['Autumn:', 'Winter:', 'Spring:', 'Summer:'].some(term => line.startsWith(term))) {
-        currentTerm = line.split(':')[0] as 'Autumn' | 'Winter' | 'Spring' | 'Summer';
-        currentSection = 'courses';
-      } else if (line.startsWith('Club Options:')) {
-        currentSection = 'clubs';
-      } else if (line.startsWith('Events:')) {
-        currentSection = 'events';
-      } else if (line.startsWith('Internship:')) {
-        currentSection = 'internship';
-      }
-
-      if (currentYear && currentTerm && line.startsWith('- Course 1:')) {
-        const [name, description] = line.replace('- Course 1:', '').split(' - ').map(s => s.trim());
-        if (currentTerm !== 'Summer') {
-          schedule[currentYear][currentTerm].Course_1 = { name, description };
-        }
-      } else if (currentYear && currentTerm && line.startsWith('- Course 2:')) {
-        const [name, description] = line.replace('- Course 2:', '').split(' - ').map(s => s.trim());
-        if (currentTerm !== 'Summer') {
-          schedule[currentYear][currentTerm].Course_2 = { name, description };
-        }
-      } else if (currentYear && currentTerm && line.startsWith('- Course 3:')) {
-        const [name, description] = line.replace('- Course 3:', '').split(' - ').map(s => s.trim());
-        if (currentTerm !== 'Summer') {
-          schedule[currentYear][currentTerm].Course_3 = { name, description };
-        }
-      } else if (currentYear && currentTerm && currentSection === 'clubs' && line.startsWith('-')) {
-        const club = line.replace('-', '').trim();
-        if (currentTerm !== 'Summer') {
-          schedule[currentYear][currentTerm].Club_Options.push(club);
-        }
-      } else if (currentYear && currentTerm && currentSection === 'events' && line.startsWith('-')) {
-        const event = line.replace('-', '').trim();
-        if (currentTerm !== 'Summer') {
-          schedule[currentYear][currentTerm].Events.push(event);
-        }
-      } else if (currentYear && currentTerm && currentSection === 'internship' && line.startsWith('-')) {
-        const [name, description] = line.replace('- ', '').split(' - ').map(s => s.trim());
-        if (currentTerm === 'Summer') {
-          schedule[currentYear][currentTerm].Internship = { name, description };
-        }
-      }
-    }
-
-    return schedule;
-  };
+    const schedule: MBASchedule = {\n      Year_1: {\n        Autumn: { Course_1: { name: \"\", description: \"\" }, Course_2: { name: \"\", description: \"\" }, Course_3: { name: \"\", description: \"\" }, Club_Options: [], Events: [] },\n        Winter: { Course_1: { name: \"\", description: \"\" }, Course_2: { name: \"\", description: \"\" }, Course_3: { name: \"\", description: \"\" }, Club_Options: [], Events: [] },\n        Spring: { Course_1: { name: \"\", description: \"\" }, Course_2: { name: \"\", description: \"\" }, Course_3: { name: \"\", description: \"\" }, Club_Options: [], Events: [] },\n        Summer: { Internship: { name: \"\", description: \"\" } }\n      },\n      Year_2: {\n        Autumn: { Course_1: { name: \"\", description: \"\" }, Course_2: { name: \"\", description: \"\" }, Course_3: { name: \"\", description: \"\" }, Club_Options: [], Events: [] },\n        Winter: { Course_1: { name: \"\", description: \"\" }, Course_2: { name: \"\", description: \"\" }, Course_3: { name: \"\", description: \"\" }, Club_Options: [], Events: [] },\n        Spring: { Course_1: { name: \"\", description: \"\" }, Course_2: { name: \"\", description: \"\" }, Course_3: { name: \"\", description: \"\" }, Club_Options: [], Events: [] },\n        Summer: { Internship: { name: \"\", description: \"\" } }\n      }\n    };\n\n    const lines = output.split('\\n');\n    let currentYear: 'Year_1' | 'Year_2' | null = null;\n    let currentTerm: 'Autumn' | 'Winter' | 'Spring' | 'Summer' | null = null;\n    let currentSection: 'courses' | 'clubs' | 'events' | 'internship' | null = null;\n\n    for (let line of lines) {\n      line = line.trim();\n      \n      if (line.startsWith('Year 1:')) {\n        currentYear = 'Year_1';\n      } else if (line.startsWith('Year 2:')) {\n        currentYear = 'Year_2';\n      } else if (['Autumn:', 'Winter:', 'Spring:', 'Summer:'].some(term => line.startsWith(term))) {\n        currentTerm = line.split(':')[0] as 'Autumn' | 'Winter' | 'Spring' | 'Summer';\n        currentSection = 'courses';\n      } else if (line.startsWith('Club Options:')) {\n        currentSection = 'clubs';\n      } else if (line.startsWith('Events:')) {\n        currentSection = 'events';\n      } else if (line.startsWith('Internship:')) {\n        currentSection = 'internship';\n      }\n\n      if (currentYear && currentTerm && line.startsWith('- Course 1:')) {\n        const [name, description] = line.replace('- Course 1:', '').split(' - ').map(s => s.trim());\n        if (currentTerm !== 'Summer') {\n          schedule[currentYear][currentTerm].Course_1 = { name, description };\n        }\n      } else if (currentYear && currentTerm && line.startsWith('- Course 2:')) {\n        const [name, description] = line.replace('- Course 2:', '').split(' - ').map(s => s.trim());\n        if (currentTerm !== 'Summer') {\n          schedule[currentYear][currentTerm].Course_2 = { name, description };\n        }\n      } else if (currentYear && currentTerm && line.startsWith('- Course 3:')) {\n        const [name, description] = line.replace('- Course 3:', '').split(' - ').map(s => s.trim());\n        if (currentTerm !== 'Summer') {\n          schedule[currentYear][currentTerm].Course_3 = { name, description };\n        }\n      } else if (currentYear && currentTerm && currentSection === 'clubs' && line.startsWith('-')) {\n        const club = line.replace('-', '').trim();\n        if (currentTerm !== 'Summer') {\n          schedule[currentYear][currentTerm].Club_Options.push(club);\n        }\n      } else if (currentYear && currentTerm && currentSection === 'events' && line.startsWith('-')) {\n        const event = line.replace('-', '').trim();\n        if (currentTerm !== 'Summer') {\n          schedule[currentYear][currentTerm].Events.push(event);\n        }\n      } else if (currentYear && currentTerm && currentSection === 'internship' && line.startsWith('-')) {\n        const [name, description] = line.replace('- ', '').split(' - ').map(s => s.trim());\n        if (currentTerm === 'Summer') {\n          schedule[currentYear][currentTerm].Internship = { name, description };\n        }\n      }\n    }\n\n    return schedule;\n  };
 
   const TermBlock = ({ data, term }: { data: TermData | SummerData; term: string }) => {
     const isSummer = term === "Summer";
@@ -702,6 +604,7 @@ const Index = () => {
 
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Why Booth MBA Card */}
           <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl font-bold text-[#ea384c]">
@@ -719,6 +622,7 @@ const Index = () => {
             </CardContent>
           </Card>
 
+          {/* Chat Card */}
           <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 md:row-span-2">
             <CardHeader>
               <CardTitle className="text-2xl font-bold text-center">
@@ -787,11 +691,12 @@ const Index = () => {
             </CardContent>
           </Card>
 
-          {/* Add the test section after the chat card */}
+          {/* Test Section Card */}
           <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300">
             {renderTestSection()}
           </Card>
 
+          {/* MBA Experience Form Card */}
           <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl font-bold">
@@ -826,15 +731,4 @@ const Index = () => {
                         </span>
                       </SelectItem>
                       <SelectItem value="Executive_MBA">
-                        <span className="flex items-center gap-2">
-                          <Briefcase className="h-4 w-4" />
-                          Executive MBA
-                        </span>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Step 2: Select Your Focus Area</label>
-                  <Select onValueChange={setMBA
+                        <span
