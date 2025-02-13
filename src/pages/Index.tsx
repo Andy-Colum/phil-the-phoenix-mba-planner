@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -25,6 +24,8 @@ import {
   Laptop,
   LineChart
 } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Separator } from "@/components/ui/separator";
 
 const Index = () => {
   const { toast } = useToast();
@@ -34,7 +35,6 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-  // Updated state variables with consistent naming
   const [MBA_Program_Type, setMBA_Program_Type] = useState("");
   const [MBA_Focus_Area, setMBA_Focus_Area] = useState("");
   const [Professional_Goals, setProfessional_Goals] = useState("");
@@ -117,6 +117,197 @@ const Index = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  type TermData = {
+    courses?: string[];
+    extracurriculars?: string[];
+    events?: string[];
+    internship?: string;
+  };
+
+  type MBASchedule = {
+    year1: {
+      autumn: TermData;
+      winter: TermData;
+      spring: TermData;
+      summer: TermData;
+    };
+    year2: {
+      autumn: TermData;
+      winter: TermData;
+      spring: TermData;
+      summer: TermData;
+    };
+  };
+
+  const sampleMBAData: MBASchedule = {
+    year1: {
+      autumn: {
+        courses: [
+          "Financial Accounting",
+          "Microeconomics",
+          "Leadership Development"
+        ],
+        extracurriculars: [
+          "Investment Banking Group",
+          "Consulting Club"
+        ],
+        events: [
+          "Fall Career Fair",
+          "Alumni Networking Night"
+        ]
+      },
+      winter: {
+        courses: [
+          "Corporate Finance",
+          "Marketing Strategy",
+          "Operations Management"
+        ],
+        extracurriculars: [
+          "Case Competition Club",
+          "Tech Group"
+        ],
+        events: [
+          "Winter Conference",
+          "Industry Speaker Series"
+        ]
+      },
+      spring: {
+        courses: [
+          "Managerial Accounting",
+          "Business Strategy",
+          "Data Analytics"
+        ],
+        extracurriculars: [
+          "Entrepreneurship Club",
+          "Social Impact Group"
+        ],
+        events: [
+          "Spring Networking Event",
+          "Startup Pitch Competition"
+        ]
+      },
+      summer: {
+        internship: "Summer Internship Program"
+      }
+    },
+    year2: {
+      autumn: {
+        courses: [
+          "Advanced Finance",
+          "Strategic Leadership",
+          "Global Markets"
+        ],
+        extracurriculars: [
+          "Finance Club Leadership",
+          "Mentor Program"
+        ],
+        events: [
+          "Leadership Summit",
+          "Career Trek"
+        ]
+      },
+      winter: {
+        courses: [
+          "Negotiation",
+          "Innovation Strategy",
+          "Business Analytics"
+        ],
+        extracurriculars: [
+          "Venture Capital Club",
+          "Data Analytics Group"
+        ],
+        events: [
+          "Winter Networking Event",
+          "Industry Panel"
+        ]
+      },
+      spring: {
+        courses: [
+          "International Business",
+          "Entrepreneurial Finance",
+          "Digital Strategy"
+        ],
+        extracurriculars: [
+          "Graduation Committee",
+          "Alumni Network"
+        ],
+        events: [
+          "Graduation Gala",
+          "Final Presentation"
+        ]
+      },
+      summer: {
+        internship: "Post-MBA Career Transition"
+      }
+    }
+  };
+
+  const TermBlock = ({ data, term }: { data: TermData; term: string }) => {
+    return (
+      <Collapsible className="w-full">
+        <CollapsibleTrigger className="w-full">
+          <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow">
+            <h4 className="font-medium text-lg">{term}</h4>
+            <ArrowRight className="h-5 w-5 transform transition-transform group-open:rotate-90" />
+          </div>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="p-4 space-y-4 bg-gray-50 rounded-lg mt-2">
+          {data.courses ? (
+            <div>
+              <h5 className="font-medium text-sm text-gray-700 mb-2">Courses</h5>
+              <ul className="space-y-2">
+                {data.courses.map((course, idx) => (
+                  <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
+                    <BookOpen className="h-4 w-4" />
+                    {course}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          
+          {data.extracurriculars ? (
+            <div>
+              <h5 className="font-medium text-sm text-gray-700 mb-2">Extracurricular Activities</h5>
+              <ul className="space-y-2">
+                {data.extracurriculars.map((activity, idx) => (
+                  <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
+                    <Users className="h-4 w-4" />
+                    {activity}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          
+          {data.events ? (
+            <div>
+              <h5 className="font-medium text-sm text-gray-700 mb-2">Events & Networking</h5>
+              <ul className="space-y-2">
+                {data.events.map((event, idx) => (
+                  <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    {event}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          
+          {data.internship && (
+            <div>
+              <h5 className="font-medium text-sm text-gray-700 mb-2">Internship</h5>
+              <p className="text-sm text-gray-600 flex items-center gap-2">
+                <Briefcase className="h-4 w-4" />
+                {data.internship}
+              </p>
+            </div>
+          )}
+        </CollapsibleContent>
+      </Collapsible>
+    );
   };
 
   return (
@@ -345,7 +536,7 @@ const Index = () => {
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent 
           side="bottom" 
-          className="w-[90%] sm:w-[540px] h-[80vh] fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg overflow-y-auto animate-scale-in"
+          className="w-[90%] sm:w-[540px] h-[80vh] fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg overflow-y-auto"
         >
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
@@ -356,46 +547,24 @@ const Index = () => {
           
           <div className="mt-6 space-y-8">
             <div>
-              <h3 className="text-lg font-semibold mb-4">Year 1</h3>
-              <div className="grid gap-4">
-                {["Autumn", "Winter", "Spring"].map((quarter) => (
-                  <div key={quarter} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                    <h4 className="font-medium mb-2">{quarter} Quarter</h4>
-                    <div className="space-y-2">
-                      <p className="text-sm text-gray-600">
-                        <span className="font-medium">Academic:</span> Core courses in {MBA_Focus_Area?.replace(/_/g, ' ')}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        <span className="font-medium">Professional:</span> Career workshops, networking events
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        <span className="font-medium">Extracurricular:</span> Student group activities, leadership opportunities
-                      </p>
-                    </div>
-                  </div>
-                ))}
+              <h3 className="text-xl font-semibold mb-4">Year 1</h3>
+              <div className="space-y-4">
+                <TermBlock data={sampleMBAData.year1.autumn} term="Autumn Quarter" />
+                <TermBlock data={sampleMBAData.year1.winter} term="Winter Quarter" />
+                <TermBlock data={sampleMBAData.year1.spring} term="Spring Quarter" />
+                <TermBlock data={sampleMBAData.year1.summer} term="Summer" />
               </div>
             </div>
 
+            <Separator className="my-6" />
+
             <div>
-              <h3 className="text-lg font-semibold mb-4">Year 2</h3>
-              <div className="grid gap-4">
-                {["Autumn", "Winter", "Spring"].map((quarter) => (
-                  <div key={quarter} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                    <h4 className="font-medium mb-2">{quarter} Quarter</h4>
-                    <div className="space-y-2">
-                      <p className="text-sm text-gray-600">
-                        <span className="font-medium">Academic:</span> Advanced electives in {MBA_Focus_Area?.replace(/_/g, ' ')}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        <span className="font-medium">Professional:</span> Internship opportunities, career transitions
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        <span className="font-medium">Extracurricular:</span> Club leadership, community impact
-                      </p>
-                    </div>
-                  </div>
-                ))}
+              <h3 className="text-xl font-semibold mb-4">Year 2</h3>
+              <div className="space-y-4">
+                <TermBlock data={sampleMBAData.year2.autumn} term="Autumn Quarter" />
+                <TermBlock data={sampleMBAData.year2.winter} term="Winter Quarter" />
+                <TermBlock data={sampleMBAData.year2.spring} term="Spring Quarter" />
+                <TermBlock data={sampleMBAData.year2.summer} term="Summer" />
               </div>
             </div>
 
