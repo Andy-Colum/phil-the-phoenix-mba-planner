@@ -245,7 +245,7 @@ const Index = () => {
     console.log('Request body being sent to API:', JSON.stringify(requestBody, null, 2));
 
     try {
-      const response = await fetch('https://api.dify.ai/v1/chat-messages', {
+      const response = await fetch('https://api.dify.ai/v1/workflows/run', {
         method: 'POST',
         headers: {
           'Authorization': 'Bearer app-BMVzb50wyz8hw04pC90s3Rig',
@@ -263,27 +263,53 @@ const Index = () => {
       const data = await response.json();
       console.log('API Response:', JSON.stringify(data, null, 2));
       
-      if (data.answer) {
-        setChatHistory(prev => [...prev, { 
-          role: 'assistant', 
-          content: data.answer 
-        }]);
+      if (data.data && data.data.status === 'succeeded' && data.data.outputs) {
+        try {
+          const outputText = data.data.outputs.text;
+          
+          let parsedResponse;
+          try {
+            parsedResponse = typeof outputText === 'string' ? JSON.parse(outputText) : outputText;
+          } catch (parseError) {
+            console.error('Error parsing output text:', parseError);
+            parsedResponse = outputText;
+          }
+
+          setChatHistory(prev => [...prev, { 
+            role: 'assistant', 
+            content: typeof parsedResponse === 'string' ? parsedResponse : JSON.stringify(parsedResponse, null, 2)
+          }]);
+
+          toast({
+            title: "Success",
+            description: "Response generated successfully!",
+          });
+        } catch (error) {
+          console.error('Error processing response:', error);
+          toast({
+            title: "Error",
+            description: "Unable to process the generated response. Please try again.",
+            variant: "destructive"
+          });
+        }
+      } else if (data.data && data.data.status === 'failed') {
+        throw new Error(data.data.error || 'Workflow execution failed');
       } else {
-        throw new Error('No answer received from API');
+        throw new Error('Invalid workflow response format');
       }
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('Error with workflow:', error);
       toast({
         title: "Error",
-        description: "Unable to connect to the chat service. Please try again later.",
+        description: "Unable to generate response. Please try again later.",
         variant: "destructive"
       });
       setChatHistory(prev => [...prev, { 
         role: 'assistant', 
-        content: "I apologize, but I'm having trouble connecting right now. Please try again later." 
+        content: "I apologize, but I'm having trouble processing your request right now. Please try again later." 
       }]);
     } finally {
-      setIsLoading(false);
+      setIsGenerating(false);
     }
   };
 
