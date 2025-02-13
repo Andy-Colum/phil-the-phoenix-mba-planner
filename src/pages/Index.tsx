@@ -134,6 +134,59 @@ const Index = () => {
 
   const [sampleMBAData, setSampleMBAData] = useState<MBASchedule>(defaultMBASchedule);
 
+  // Add a test function
+  const testWorkflowKey = async () => {
+    try {
+      const { data: workflowKey, error: workflowKeyError } = await supabase
+        .from('secrets')
+        .select('value')
+        .eq('name', 'DIFY_WORKFLOW_API_KEY')
+        .single();
+
+      if (workflowKeyError) {
+        console.error('Error fetching workflow API key:', workflowKeyError);
+        toast({
+          title: "Error",
+          description: "Failed to fetch the workflow API key",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (!workflowKey?.value) {
+        console.error('No workflow key found');
+        toast({
+          title: "Error",
+          description: "No workflow API key found in the database",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Safely log key details without exposing the full key
+      console.log('Workflow Key Details:', {
+        length: workflowKey.value.length,
+        startsWidth: workflowKey.value.substring(0, 5),
+        endsWidth: workflowKey.value.slice(-5),
+        hasWhitespace: /\s/.test(workflowKey.value),
+        isEmpty: workflowKey.value.trim().length === 0
+      });
+
+      toast({
+        title: "Success",
+        description: "Check console for API key details",
+      });
+
+    } catch (error) {
+      console.error('Test error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to test the workflow API key",
+        variant: "destructive"
+      });
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -620,6 +673,20 @@ const Index = () => {
     );
   };
 
+  // Add button to UI right after the chat section
+  const renderTestSection = () => (
+    <div className="mt-4 p-4 bg-gray-100 rounded-lg">
+      <h3 className="text-lg font-semibold mb-2">API Testing Section</h3>
+      <Button 
+        onClick={testWorkflowKey}
+        variant="outline"
+        className="w-full"
+      >
+        Test Workflow API Key
+      </Button>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-white">
       <header className="w-full bg-[#ea384c] shadow-md">
@@ -720,6 +787,11 @@ const Index = () => {
             </CardContent>
           </Card>
 
+          {/* Add the test section after the chat card */}
+          <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300">
+            {renderTestSection()}
+          </Card>
+
           <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl font-bold">
@@ -765,138 +837,4 @@ const Index = () => {
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Step 2: Select Your Focus Area</label>
-                  <Select onValueChange={setMBA_Focus_Area} value={MBA_Focus_Area}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Choose your focus" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Finance_Accounting">
-                        <span className="flex items-center gap-2">
-                          <LineChart className="h-4 w-4" />
-                          Finance & Accounting
-                        </span>
-                      </SelectItem>
-                      <SelectItem value="Entrepreneurship_Innovation">
-                        <span className="flex items-center gap-2">
-                          <Rocket className="h-4 w-4" />
-                          Entrepreneurship & Innovation
-                        </span>
-                      </SelectItem>
-                      <SelectItem value="Marketing_Strategy">
-                        <span className="flex items-center gap-2">
-                          <Target className="h-4 w-4" />
-                          Marketing & Strategy
-                        </span>
-                      </SelectItem>
-                      <SelectItem value="Data_Analytics_Tech">
-                        <span className="flex items-center gap-2">
-                          <Database className="h-4 w-4" />
-                          Data Analytics & Tech
-                        </span>
-                      </SelectItem>
-                      <SelectItem value="International_Business">
-                        <span className="flex items-center gap-2">
-                          <Globe className="h-4 w-4" />
-                          International Business
-                        </span>
-                      </SelectItem>
-                      <SelectItem value="Public_Policy_Impact">
-                        <span className="flex items-center gap-2">
-                          <Building className="h-4 w-4" />
-                          Public Policy & Impact
-                        </span>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Step 3: Professional Goals</label>
-                  <Input
-                    placeholder="What are your career aspirations and professional objectives?"
-                    value={Professional_Goals}
-                    onChange={(e) => setProfessional_Goals(e.target.value)}
-                    className="w-full"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Step 4: Extracurricular Interests</label>
-                  <Input
-                    placeholder="What activities, clubs, or experiences interest you?"
-                    value={Extracurricular_Interests}
-                    onChange={(e) => setExtracurricular_Interests(e.target.value)}
-                    className="w-full"
-                  />
-                </div>
-
-                <Button 
-                  type="submit"
-                  className="w-full bg-[#ea384c] hover:bg-[#d42d3d] text-white font-semibold"
-                  disabled={isGenerating}
-                >
-                  {isGenerating ? (
-                    <>
-                      <Loader className="h-5 w-5 animate-spin" />
-                      Generating Your MBA Journey...
-                    </>
-                  ) : (
-                    <>
-                      Generate Your MBA Journey
-                      <ArrowRight className="h-5 w-5 ml-2" />
-                    </>
-                  )}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent 
-          side="bottom" 
-          className="w-[90%] sm:w-[540px] h-[80vh] fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg overflow-y-auto"
-        >
-          <SheetHeader className="flex justify-between items-center">
-            <SheetTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              Your Two-Year MBA Journey at Booth
-            </SheetTitle>
-            <Button
-              onClick={handleDownload}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <Download className="h-4 w-4" />
-              Download Schedule
-            </Button>
-          </SheetHeader>
-          
-          <div className="mt-6 space-y-8">
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Year 1</h3>
-              <div className="space-y-4">
-                <TermBlock data={sampleMBAData.Year_1.Autumn} term="Autumn Quarter" />
-                <TermBlock data={sampleMBAData.Year_1.Winter} term="Winter Quarter" />
-                <TermBlock data={sampleMBAData.Year_1.Spring} term="Spring Quarter" />
-                <TermBlock data={sampleMBAData.Year_1.Summer} term="Summer" />
-              </div>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Year 2</h3>
-              <div className="space-y-4">
-                <TermBlock data={sampleMBAData.Year_2.Autumn} term="Autumn Quarter" />
-                <TermBlock data={sampleMBAData.Year_2.Winter} term="Winter Quarter" />
-                <TermBlock data={sampleMBAData.Year_2.Spring} term="Spring Quarter" />
-                <TermBlock data={sampleMBAData.Year_2.Summer} term="Summer" />
-              </div>
-            </div>
-          </div>
-        </SheetContent>
-      </Sheet>
-    </div>
-  );
-};
-
-export default Index;
+                  <Select onValueChange={setMBA
