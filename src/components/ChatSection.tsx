@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { MessageSquare } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -37,10 +38,20 @@ export const ChatSection = () => {
     setIsLoading(true);
     
     try {
+      const { data: secretData, error: secretError } = await supabase
+        .from('secrets')
+        .select('value')
+        .eq('name', 'DIFY_CHAT_API_KEY')
+        .single();
+
+      if (secretError || !secretData) {
+        throw new Error('Could not retrieve API key');
+      }
+
       const response = await fetch('https://api.dify.ai/v1/chat-messages', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer app-BMVzb50wyz8hw04pC90s3Rig',
+          'Authorization': `Bearer ${secretData.value}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
