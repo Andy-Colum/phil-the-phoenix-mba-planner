@@ -138,25 +138,31 @@ const Index = () => {
     Year_2: YearData;
   };
 
+  const defaultTermData: TermData = {
+    Course_1: { name: "Default Course", description: "Default description" },
+    Course_2: { name: "Default Course", description: "Default description" },
+    Course_3: { name: "Default Course", description: "Default description" },
+    Club_Options: ["Default Club"],
+    Events: ["Default Event"]
+  };
+
+  const defaultSummerData: SummerData = {
+    Internship: {
+      name: "Default Summer Internship",
+      description: "Default summer internship description"
+    }
+  };
+
+  const defaultYearData: YearData = {
+    Autumn: defaultTermData,
+    Winter: defaultTermData,
+    Spring: defaultTermData,
+    Summer: defaultSummerData
+  };
+
   const defaultSchedule: MBASchedule = {
-    Year_1: {
-      Autumn: {
-        Course_1: { name: "Default Course", description: "Default description" },
-        Course_2: { name: "Default Course", description: "Default description" },
-        Course_3: { name: "Default Course", description: "Default description" },
-        Club_Options: ["Default Club"],
-        Events: ["Default Event"]
-      },
-      Winter: {/* ... similar default structure ... */},
-      Spring: {/* ... similar default structure ... */},
-      Summer: {
-        Internship: {
-          name: "Default Summer Internship",
-          description: "Default summer internship description"
-        }
-      }
-    },
-    Year_2: {/* ... similar default structure ... */}
+    Year_1: defaultYearData,
+    Year_2: defaultYearData
   };
 
   const [MBASchedule, setMBASchedule] = useState<MBASchedule>(defaultSchedule);
