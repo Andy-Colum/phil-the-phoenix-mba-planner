@@ -329,7 +329,7 @@ const Index = () => {
         },
         body: JSON.stringify({
           inputs: {
-            "MBA_Program_Type": MBA_Program_Type,
+            "MBA_Program_Type": MBA_Program_Type.replace("-", "_"),
             "MBA_Focus_Area": MBA_Focus_Area,
             "Professional_Goals": Professional_Goals,
             "Extracurricular_Interests": Extracurricular_Interests
@@ -350,8 +350,7 @@ const Index = () => {
 
       if (difyResponse.data.status === 'succeeded' && difyResponse.data.outputs) {
         try {
-          const jsonString = difyResponse.data.outputs.output;
-          const scheduleData: MBASchedule = JSON.parse(jsonString);
+          const scheduleData: MBASchedule = difyResponse.data.outputs;
           console.log("Schedule Data:", scheduleData);
           setSampleMBAData(scheduleData);
           setIsSheetOpen(true);
