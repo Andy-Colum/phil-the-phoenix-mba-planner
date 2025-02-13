@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GraduationCap } from "lucide-react";
@@ -33,11 +34,16 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-white">
       <header className="w-full bg-[#ea384c] shadow-md">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <GraduationCap className="h-8 w-8 text-white" />
-              <h1 className="text-2xl font-bold text-white">Chicago Booth MBA</h1>
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex items-center justify-center">
+            <div className="flex items-center space-x-3">
+              <GraduationCap className="h-10 w-10 text-white" />
+              <div className="text-center">
+                <h1 className="text-3xl font-bold text-white">
+                  The University of Chicago Booth School of Business
+                </h1>
+                <p className="text-white/90 text-sm mt-1">Transforming Leaders, Shaping Global Business</p>
+              </div>
             </div>
           </div>
         </div>
@@ -65,10 +71,17 @@ const Index = () => {
           <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 md:row-span-2">
             <CardHeader>
               <CardTitle className="text-2xl font-bold text-center">
-                Your MBA Journey Starts Here
+                Chat with Phil the Phoenix
               </CardTitle>
+              <div className="flex justify-center mt-4 mb-2">
+                <img 
+                  src="/lovable-uploads/d4e869e2-854a-4aca-adbc-9638698f84f6.png" 
+                  alt="Phil the Phoenix" 
+                  className="w-32 h-32 object-contain"
+                />
+              </div>
               <p className="text-gray-700 text-center mt-2">
-                Let Phil guide you to answer any of your questions about MBA or Booth.
+                Let Phil guide you through your Booth MBA journey and answer any questions you have.
               </p>
             </CardHeader>
             <CardContent>
