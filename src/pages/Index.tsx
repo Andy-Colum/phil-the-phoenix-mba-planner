@@ -302,10 +302,11 @@ const Index = () => {
 
     try {
       const API_KEY = 'app-BMVzb50wyz8hw04pC90s3Rig';
-      const WORKFLOW_ID = '19eff89f-ec03-4f75-b0fc-897e7effea02'; // Using the workflow ID from your example
+      const WORKFLOW_ID = '19eff89f-ec03-4f75-b0fc-897e7effea02';
+      const BASE_URL = 'https://api.dify.ai/v1';
 
       // First, trigger the workflow run
-      const runResponse = await fetch('https://api.dify.ai/v1/workflows/run', {
+      const runResponse = await fetch(`${BASE_URL}/workflows/run`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${API_KEY}`,
@@ -332,7 +333,7 @@ const Index = () => {
       console.log("Initial Workflow Run Response:", runData);
 
       // Get the workflow result
-      const resultResponse = await fetch(`https://api.dify.ai/v1/workflows/run/${runData.id}`, {
+      const resultResponse = await fetch(`${BASE_URL}/workflows/run/${runData.id}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${API_KEY}`,
