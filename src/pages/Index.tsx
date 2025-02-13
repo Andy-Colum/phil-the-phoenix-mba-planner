@@ -651,7 +651,7 @@ const Index = () => {
                       <SelectValue placeholder="Choose your program" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Full-Time_MBA">
+                      <SelectItem value="Full_Time_MBA">
                         <span className="flex items-center gap-2">
                           <GraduationCap className="h-4 w-4" />
                           Full-Time MBA
