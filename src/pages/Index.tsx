@@ -388,6 +388,81 @@ const Index = () => {
     }
   };
 
+  const parseDifyResponse = (output: string): MBASchedule => {
+    const schedule: MBASchedule = {
+      Year_1: {
+        Autumn: { Course_1: { name: "", description: "" }, Course_2: { name: "", description: "" }, Course_3: { name: "", description: "" }, Club_Options: [], Events: [] },
+        Winter: { Course_1: { name: "", description: "" }, Course_2: { name: "", description: "" }, Course_3: { name: "", description: "" }, Club_Options: [], Events: [] },
+        Spring: { Course_1: { name: "", description: "" }, Course_2: { name: "", description: "" }, Course_3: { name: "", description: "" }, Club_Options: [], Events: [] },
+        Summer: { Internship: { name: "", description: "" } }
+      },
+      Year_2: {
+        Autumn: { Course_1: { name: "", description: "" }, Course_2: { name: "", description: "" }, Course_3: { name: "", description: "" }, Club_Options: [], Events: [] },
+        Winter: { Course_1: { name: "", description: "" }, Course_2: { name: "", description: "" }, Course_3: { name: "", description: "" }, Club_Options: [], Events: [] },
+        Spring: { Course_1: { name: "", description: "" }, Course_2: { name: "", description: "" }, Course_3: { name: "", description: "" }, Club_Options: [], Events: [] },
+        Summer: { Internship: { name: "", description: "" } }
+      }
+    };
+
+    const lines = output.split('\n');
+    let currentYear: 'Year_1' | 'Year_2' | null = null;
+    let currentTerm: 'Autumn' | 'Winter' | 'Spring' | 'Summer' | null = null;
+    let currentSection: 'courses' | 'clubs' | 'events' | 'internship' | null = null;
+
+    for (let line of lines) {
+      line = line.trim();
+      
+      if (line.startsWith('Year 1:')) {
+        currentYear = 'Year_1';
+      } else if (line.startsWith('Year 2:')) {
+        currentYear = 'Year_2';
+      } else if (['Autumn:', 'Winter:', 'Spring:', 'Summer:'].some(term => line.startsWith(term))) {
+        currentTerm = line.split(':')[0] as 'Autumn' | 'Winter' | 'Spring' | 'Summer';
+        currentSection = 'courses';
+      } else if (line.startsWith('Club Options:')) {
+        currentSection = 'clubs';
+      } else if (line.startsWith('Events:')) {
+        currentSection = 'events';
+      } else if (line.startsWith('Internship:')) {
+        currentSection = 'internship';
+      }
+
+      if (currentYear && currentTerm && line.startsWith('- Course 1:')) {
+        const [name, description] = line.replace('- Course 1:', '').split(' - ').map(s => s.trim());
+        if (currentTerm !== 'Summer') {
+          schedule[currentYear][currentTerm].Course_1 = { name, description };
+        }
+      } else if (currentYear && currentTerm && line.startsWith('- Course 2:')) {
+        const [name, description] = line.replace('- Course 2:', '').split(' - ').map(s => s.trim());
+        if (currentTerm !== 'Summer') {
+          schedule[currentYear][currentTerm].Course_2 = { name, description };
+        }
+      } else if (currentYear && currentTerm && line.startsWith('- Course 3:')) {
+        const [name, description] = line.replace('- Course 3:', '').split(' - ').map(s => s.trim());
+        if (currentTerm !== 'Summer') {
+          schedule[currentYear][currentTerm].Course_3 = { name, description };
+        }
+      } else if (currentYear && currentTerm && currentSection === 'clubs' && line.startsWith('-')) {
+        const club = line.replace('-', '').trim();
+        if (currentTerm !== 'Summer') {
+          schedule[currentYear][currentTerm].Club_Options.push(club);
+        }
+      } else if (currentYear && currentTerm && currentSection === 'events' && line.startsWith('-')) {
+        const event = line.replace('-', '').trim();
+        if (currentTerm !== 'Summer') {
+          schedule[currentYear][currentTerm].Events.push(event);
+        }
+      } else if (currentYear && currentTerm && currentSection === 'internship' && line.startsWith('-')) {
+        const [name, description] = line.replace('- ', '').split(' - ').map(s => s.trim());
+        if (currentTerm === 'Summer') {
+          schedule[currentYear][currentTerm].Internship = { name, description };
+        }
+      }
+    }
+
+    return schedule;
+  };
+
   const TermBlock = ({ data, term }: { data: TermData | SummerData; term: string }) => {
     const isSummer = term === "Summer";
     
@@ -576,7 +651,7 @@ const Index = () => {
                       <SelectValue placeholder="Choose your program" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Full_Time_MBA">
+                      <SelectItem value="Full-Time_MBA">
                         <span className="flex items-center gap-2">
                           <GraduationCap className="h-4 w-4" />
                           Full-Time MBA
