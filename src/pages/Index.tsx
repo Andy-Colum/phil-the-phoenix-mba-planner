@@ -69,7 +69,7 @@ const Index = () => {
       const response = await fetch('https://api.dify.ai/v1/chat-messages', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_DIFY_API_KEY || 'app-TU5SF4llJ6g44Y66RpZ6M94k'}`,
+          'Authorization': `Bearer app-BMVzb50wyz8hw04pC90s3Rig`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
