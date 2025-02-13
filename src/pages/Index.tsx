@@ -348,11 +348,19 @@ const Index = () => {
       const difyResponse: DifyResponse = await runResponse.json();
       console.log("Dify API Response:", difyResponse);
 
-      if (difyResponse.data.status === 'succeeded' && difyResponse.data.outputs) {
+      if (difyResponse.data.status === 'succeeded') {
         try {
-          const scheduleData: MBASchedule = difyResponse.data.outputs;
-          console.log("Schedule Data:", scheduleData);
-          setSampleMBAData(scheduleData);
+          // Parse the answer from the API response
+          if (typeof difyResponse.data.outputs === 'string') {
+            const scheduleData = JSON.parse(difyResponse.data.outputs);
+            console.log("Parsed Schedule Data:", scheduleData);
+            setSampleMBAData(scheduleData);
+          } else {
+            // If it's already an object, use it directly
+            console.log("Direct Schedule Data:", difyResponse.data.outputs);
+            setSampleMBAData(difyResponse.data.outputs);
+          }
+          
           setIsSheetOpen(true);
           
           toast({
