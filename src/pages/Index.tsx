@@ -230,43 +230,25 @@ const Index = () => {
 
     setIsGenerating(true);
 
-    // First, let's test the base API endpoint
+    const requestBody = {
+      query: MBA_Program_Type,
+      inputs: {
+        program_type: MBA_Program_Type,
+        focus_area: MBA_Focus_Area,
+        professional_goals: Professional_Goals,
+        extracurricular_interests: Extracurricular_Interests
+      },
+      response_mode: "blocking",
+      user: "booth-mba-user"
+    };
+
+    console.log('Request body being sent to API:', JSON.stringify(requestBody, null, 2));
+
     try {
-      const testResponse = await fetch('https://api.dify.ai/v1', {
-        method: 'GET',
-        headers: {
-          'Authorization': 'Bearer app-zA9ZDv20AN3bzw4fbTCis0KJ',
-          'Content-Type': 'application/json'
-        }
-      });
-
-      console.log('Test API Response:', {
-        status: testResponse.status,
-        statusText: testResponse.statusText
-      });
-
-      const testData = await testResponse.text();
-      console.log('Test API Data:', testData);
-
-      // Now proceed with the actual request if the test was successful
-      const requestBody = {
-        query: MBA_Program_Type,
-        inputs: {
-          program_type: MBA_Program_Type,
-          focus_area: MBA_Focus_Area,
-          professional_goals: Professional_Goals,
-          extracurricular_interests: Extracurricular_Interests
-        },
-        response_mode: "blocking",
-        user: "booth-mba-user"
-      };
-
-      console.log('Request body being sent to API:', JSON.stringify(requestBody, null, 2));
-
-      const response = await fetch('https://api.dify.ai/v1/workflows/run', {
+      const response = await fetch('https://api.dify.ai/v1/chat-messages', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer app-zA9ZDv20AN3bzw4fbTCis0KJ',
+          'Authorization': 'Bearer app-BMVzb50wyz8hw04pC90s3Rig',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(requestBody)
@@ -281,43 +263,27 @@ const Index = () => {
       const data = await response.json();
       console.log('API Response:', JSON.stringify(data, null, 2));
       
-      if (data.data && data.data.outputs) {
-        try {
-          let schedule;
-          if (typeof data.data.outputs === 'string') {
-            schedule = JSON.parse(data.data.outputs);
-          } else if (data.data.outputs.text) {
-            schedule = JSON.parse(data.data.outputs.text);
-          } else {
-            throw new Error('Invalid response format');
-          }
-
-          setMBASchedule(schedule);
-          setIsSheetOpen(true);
-          toast({
-            title: "Success",
-            description: "Your personalized MBA journey has been generated!",
-          });
-        } catch (error) {
-          console.error('Error parsing schedule:', error);
-          toast({
-            title: "Error",
-            description: "Unable to process the generated schedule. Please try again.",
-            variant: "destructive"
-          });
-        }
+      if (data.answer) {
+        setChatHistory(prev => [...prev, { 
+          role: 'assistant', 
+          content: data.answer 
+        }]);
       } else {
-        throw new Error('Invalid API response format');
+        throw new Error('No answer received from API');
       }
     } catch (error) {
-      console.error('Error with API:', error);
+      console.error('Error sending message:', error);
       toast({
         title: "Error",
-        description: "Unable to connect to the API. Please try again later.",
+        description: "Unable to connect to the chat service. Please try again later.",
         variant: "destructive"
       });
+      setChatHistory(prev => [...prev, { 
+        role: 'assistant', 
+        content: "I apologize, but I'm having trouble connecting right now. Please try again later." 
+      }]);
     } finally {
-      setIsGenerating(false);
+      setIsLoading(false);
     }
   };
 
