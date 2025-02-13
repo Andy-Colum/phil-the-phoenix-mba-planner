@@ -22,10 +22,100 @@ import {
   Calendar,
   BookOpen,
   Laptop,
-  LineChart
+  LineChart,
+  Loader,
+  Download
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
+import { jsPDF } from "jspdf";
+
+type CourseData = {
+  name: string;
+  description: string;
+};
+
+type TermData = {
+  Course_1: CourseData;
+  Course_2: CourseData;
+  Course_3: CourseData;
+  Club_Options: string[];
+  Events: string[];
+};
+
+type SummerData = {
+  Internship: {
+    name: string;
+    description: string;
+  };
+};
+
+type YearData = {
+  Autumn: TermData;
+  Winter: TermData;
+  Spring: TermData;
+  Summer: SummerData;
+};
+
+type MBASchedule = {
+  Year_1: YearData;
+  Year_2: YearData;
+};
+
+const defaultMBASchedule: MBASchedule = {
+  Year_1: {
+    Autumn: {
+      Course_1: { name: "", description: "" },
+      Course_2: { name: "", description: "" },
+      Course_3: { name: "", description: "" },
+      Club_Options: [],
+      Events: []
+    },
+    Winter: {
+      Course_1: { name: "", description: "" },
+      Course_2: { name: "", description: "" },
+      Course_3: { name: "", description: "" },
+      Club_Options: [],
+      Events: []
+    },
+    Spring: {
+      Course_1: { name: "", description: "" },
+      Course_2: { name: "", description: "" },
+      Course_3: { name: "", description: "" },
+      Club_Options: [],
+      Events: []
+    },
+    Summer: {
+      Internship: { name: "", description: "" }
+    }
+  },
+  Year_2: {
+    Autumn: {
+      Course_1: { name: "", description: "" },
+      Course_2: { name: "", description: "" },
+      Course_3: { name: "", description: "" },
+      Club_Options: [],
+      Events: []
+    },
+    Winter: {
+      Course_1: { name: "", description: "" },
+      Course_2: { name: "", description: "" },
+      Course_3: { name: "", description: "" },
+      Club_Options: [],
+      Events: []
+    },
+    Spring: {
+      Course_1: { name: "", description: "" },
+      Course_2: { name: "", description: "" },
+      Course_3: { name: "", description: "" },
+      Club_Options: [],
+      Events: []
+    },
+    Summer: {
+      Internship: { name: "", description: "" }
+    }
+  }
+};
 
 const Index = () => {
   const { toast } = useToast();
@@ -34,66 +124,12 @@ const Index = () => {
   const [chatHistory, setChatHistory] = useState<Array<{ role: 'user' | 'assistant', content: string }>>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const [MBA_Program_Type, setMBA_Program_Type] = useState("");
   const [MBA_Focus_Area, setMBA_Focus_Area] = useState("");
   const [Professional_Goals, setProfessional_Goals] = useState("");
   const [Extracurricular_Interests, setExtracurricular_Interests] = useState("");
-
-  const defaultMBASchedule: MBASchedule = {
-    Year_1: {
-      Autumn: {
-        Course_1: { name: "", description: "" },
-        Course_2: { name: "", description: "" },
-        Course_3: { name: "", description: "" },
-        Club_Options: [],
-        Events: []
-      },
-      Winter: {
-        Course_1: { name: "", description: "" },
-        Course_2: { name: "", description: "" },
-        Course_3: { name: "", description: "" },
-        Club_Options: [],
-        Events: []
-      },
-      Spring: {
-        Course_1: { name: "", description: "" },
-        Course_2: { name: "", description: "" },
-        Course_3: { name: "", description: "" },
-        Club_Options: [],
-        Events: []
-      },
-      Summer: {
-        Internship: { name: "", description: "" }
-      }
-    },
-    Year_2: {
-      Autumn: {
-        Course_1: { name: "", description: "" },
-        Course_2: { name: "", description: "" },
-        Course_3: { name: "", description: "" },
-        Club_Options: [],
-        Events: []
-      },
-      Winter: {
-        Course_1: { name: "", description: "" },
-        Course_2: { name: "", description: "" },
-        Course_3: { name: "", description: "" },
-        Club_Options: [],
-        Events: []
-      },
-      Spring: {
-        Course_1: { name: "", description: "" },
-        Course_2: { name: "", description: "" },
-        Course_3: { name: "", description: "" },
-        Club_Options: [],
-        Events: []
-      },
-      Summer: {
-        Internship: { name: "", description: "" }
-      }
-    }
-  };
 
   const [sampleMBAData, setSampleMBAData] = useState<MBASchedule>(defaultMBASchedule);
 
@@ -108,6 +144,8 @@ const Index = () => {
       });
       return;
     }
+
+    setIsGenerating(true);
 
     try {
       const response = await fetch('https://api.dify.ai/v1/workflows/run', {
@@ -139,7 +177,6 @@ const Index = () => {
         try {
           const scheduleData: MBASchedule = JSON.parse(data.data.outputs.output);
           
-          // Validate the parsed data has the required structure
           if (scheduleData?.Year_1?.Autumn && scheduleData?.Year_2?.Autumn) {
             setSampleMBAData(scheduleData);
             setIsSheetOpen(true);
@@ -169,39 +206,146 @@ const Index = () => {
         description: "Unable to generate your MBA schedule. Please try again later.",
         variant: "destructive"
       });
+    } finally {
+      setIsGenerating(false);
     }
   };
 
-  type CourseData = {
-    name: string;
-    description: string;
-  };
+  const handleDownload = () => {
+    const doc = new jsPDF();
+    let yOffset = 10;
+    const lineHeight = 7;
+    const indent = 5;
+    
+    // Title and Student Info
+    doc.setFontSize(16);
+    doc.text("Chicago Booth MBA Schedule", 10, yOffset);
+    yOffset += lineHeight * 2;
 
-  type TermData = {
-    Course_1: CourseData;
-    Course_2: CourseData;
-    Course_3: CourseData;
-    Club_Options: string[];
-    Events: string[];
-  };
+    doc.setFontSize(12);
+    doc.text("Student Information:", 10, yOffset);
+    yOffset += lineHeight;
+    doc.setFontSize(10);
+    doc.text(`Program Type: ${MBA_Program_Type.replace(/_/g, ' ')}`, 10 + indent, yOffset);
+    yOffset += lineHeight;
+    doc.text(`Focus Area: ${MBA_Focus_Area.replace(/_/g, ' ')}`, 10 + indent, yOffset);
+    yOffset += lineHeight;
+    doc.text(`Professional Goals: ${Professional_Goals}`, 10 + indent, yOffset);
+    yOffset += lineHeight;
+    doc.text(`Extracurricular Interests: ${Extracurricular_Interests}`, 10 + indent, yOffset);
+    yOffset += lineHeight * 2;
 
-  type SummerData = {
-    Internship: {
-      name: string;
-      description: string;
+    // Helper function to add text with word wrap
+    const addWrappedText = (text: string, x: number, y: number, maxWidth: number) => {
+      const words = text.split(' ');
+      let line = '';
+      let newY = y;
+      
+      for (let i = 0; i < words.length; i++) {
+        const testLine = line + words[i] + ' ';
+        if (doc.getTextWidth(testLine) > maxWidth) {
+          doc.text(line, x, newY);
+          line = words[i] + ' ';
+          newY += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      doc.text(line, x, newY);
+      return newY;
     };
-  };
 
-  type YearData = {
-    Autumn: TermData;
-    Winter: TermData;
-    Spring: TermData;
-    Summer: SummerData;
-  };
+    // Function to add a term's details
+    const addTermDetails = (term: TermData | SummerData, termName: string, startY: number, isSummer: boolean = false) => {
+      let y = startY;
+      
+      doc.setFontSize(12);
+      doc.text(termName, 10, y);
+      y += lineHeight;
+      
+      doc.setFontSize(10);
+      if (!isSummer) {
+        const regularTerm = term as TermData;
+        // Courses
+        doc.text("Courses:", 10 + indent, y);
+        y += lineHeight;
+        
+        ['Course_1', 'Course_2', 'Course_3'].forEach((courseKey) => {
+          const course = regularTerm[courseKey as keyof TermData] as CourseData;
+          doc.text(`• ${course.name}`, 10 + indent * 2, y);
+          y += lineHeight;
+          y = addWrappedText(course.description, 10 + indent * 3, y, 180) + lineHeight;
+        });
 
-  type MBASchedule = {
-    Year_1: YearData;
-    Year_2: YearData;
+        // Clubs
+        doc.text("Club Options:", 10 + indent, y);
+        y += lineHeight;
+        regularTerm.Club_Options.forEach(club => {
+          doc.text(`• ${club}`, 10 + indent * 2, y);
+          y += lineHeight;
+        });
+
+        // Events
+        doc.text("Events:", 10 + indent, y);
+        y += lineHeight;
+        regularTerm.Events.forEach(event => {
+          doc.text(`• ${event}`, 10 + indent * 2, y);
+          y += lineHeight;
+        });
+      } else {
+        const summerTerm = term as SummerData;
+        doc.text("Internship:", 10 + indent, y);
+        y += lineHeight;
+        doc.text(`• ${summerTerm.Internship.name}`, 10 + indent * 2, y);
+        y += lineHeight;
+        y = addWrappedText(summerTerm.Internship.description, 10 + indent * 3, y, 180) + lineHeight;
+      }
+      
+      return y + lineHeight;
+    };
+
+    // Year 1
+    doc.setFontSize(14);
+    doc.text("Year 1", 10, yOffset);
+    yOffset += lineHeight * 1.5;
+
+    ['Autumn', 'Winter', 'Spring'].forEach(term => {
+      yOffset = addTermDetails(sampleMBAData.Year_1[term as keyof YearData], `${term} Quarter`, yOffset);
+      
+      // Add new page if we're running out of space
+      if (yOffset > 270) {
+        doc.addPage();
+        yOffset = 10;
+      }
+    });
+    
+    yOffset = addTermDetails(sampleMBAData.Year_1.Summer, "Summer", yOffset, true);
+
+    // Year 2
+    doc.addPage();
+    yOffset = 10;
+    doc.setFontSize(14);
+    doc.text("Year 2", 10, yOffset);
+    yOffset += lineHeight * 1.5;
+
+    ['Autumn', 'Winter', 'Spring'].forEach(term => {
+      yOffset = addTermDetails(sampleMBAData.Year_2[term as keyof YearData], `${term} Quarter`, yOffset);
+      
+      if (yOffset > 270) {
+        doc.addPage();
+        yOffset = 10;
+      }
+    });
+    
+    yOffset = addTermDetails(sampleMBAData.Year_2.Summer, "Summer", yOffset, true);
+
+    // Save the PDF
+    doc.save('booth-mba-schedule.pdf');
+
+    toast({
+      title: "Download Started",
+      description: "Your MBA schedule has been downloaded as a PDF!",
+    });
   };
 
   const handleStartChat = () => {
@@ -630,9 +774,19 @@ const Index = () => {
                 <Button 
                   type="submit"
                   className="w-full bg-[#ea384c] hover:bg-[#d42d3d] text-white font-semibold"
+                  disabled={isGenerating}
                 >
-                  Generate Your MBA Journey
-                  <ArrowRight className="h-5 w-5 ml-2" />
+                  {isGenerating ? (
+                    <>
+                      <Loader className="h-5 w-5 animate-spin" />
+                      Generating Your MBA Journey...
+                    </>
+                  ) : (
+                    <>
+                      Generate Your MBA Journey
+                      <ArrowRight className="h-5 w-5 ml-2" />
+                    </>
+                  )}
                 </Button>
               </form>
             </CardContent>
@@ -645,11 +799,19 @@ const Index = () => {
           side="bottom" 
           className="w-[90%] sm:w-[540px] h-[80vh] fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg overflow-y-auto"
         >
-          <SheetHeader>
+          <SheetHeader className="flex justify-between items-center">
             <SheetTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
               Your Two-Year MBA Journey at Booth
             </SheetTitle>
+            <Button
+              onClick={handleDownload}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <Download className="h-4 w-4" />
+              Download Schedule
+            </Button>
           </SheetHeader>
           
           <div className="mt-6 space-y-8">
@@ -662,9 +824,6 @@ const Index = () => {
                 <TermBlock data={sampleMBAData.Year_1.Summer} term="Summer" />
               </div>
             </div>
-
-            <Separator className="my-6" />
-
             <div>
               <h3 className="text-xl font-semibold mb-4">Year 2</h3>
               <div className="space-y-4">
@@ -673,14 +832,6 @@ const Index = () => {
                 <TermBlock data={sampleMBAData.Year_2.Spring} term="Spring Quarter" />
                 <TermBlock data={sampleMBAData.Year_2.Summer} term="Summer" />
               </div>
-            </div>
-
-            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-medium mb-2">AI-Generated Insights</h4>
-              <p className="text-sm text-gray-600">
-                Based on your interests in {MBA_Focus_Area?.replace(/_/g, ' ')} and {Extracurricular_Interests}, 
-                here are some recommended courses and activities tailored to your goals: {Professional_Goals}
-              </p>
             </div>
           </div>
         </SheetContent>
