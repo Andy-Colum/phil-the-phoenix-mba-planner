@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -33,9 +32,14 @@ const Index = () => {
   const [chatMessage, setChatMessage] = useState("");
   const [chatHistory, setChatHistory] = useState<Array<{ role: 'user' | 'assistant', content: string }>>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [apiKey, setApiKey] = useState("");
 
   const handleStartChat = () => {
     setChatStarted(true);
+    setChatHistory([{ 
+      role: 'assistant', 
+      content: "Hi! I'm Phil the Phoenix, your MBA guide. I'd be happy to help you learn more about the Booth MBA experience. What would you like to know?"
+    }]);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -62,16 +66,38 @@ const Index = () => {
     setIsLoading(true);
     
     try {
-      // Simulate API response for now
-      setTimeout(() => {
+      const response = await fetch('https://api.dify.ai/v1/chat-messages', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_DIFY_API_KEY || 'app-TU5SF4llJ6g44Y66RpZ6M94k'}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          inputs: {},
+          query: userMessage,
+          response_mode: "blocking",
+          conversation_id: "",
+          user: "booth-mba-user",
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.answer) {
         setChatHistory(prev => [...prev, { 
           role: 'assistant', 
-          content: "Hi! I'm Phil the Phoenix, your MBA guide. I'd be happy to help you learn more about the Booth MBA experience. What would you like to know?" 
+          content: data.answer 
         }]);
-        setIsLoading(false);
-      }, 1000);
+      } else {
+        throw new Error('No answer received from API');
+      }
     } catch (error) {
       console.error('Error sending message:', error);
+      setChatHistory(prev => [...prev, { 
+        role: 'assistant', 
+        content: "I apologize, but I'm having trouble connecting right now. Please try again later." 
+      }]);
+    } finally {
       setIsLoading(false);
     }
   };
