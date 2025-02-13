@@ -68,15 +68,24 @@ const Index = () => {
     setIsLoading(true);
     
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch('https://api.dify.ai/v1/chat-messages', {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer app-BMVzb50wyz8hw04pC90s3Rig`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          message: userMessage,
+          inputs: {},
+          query: userMessage,
+          response_mode: "blocking",
+          conversation_id: "",
+          user: "booth-mba-user",
         })
       });
+
+      if (!response.ok) {
+        throw new Error(`Dify API responded with status: ${response.status}`);
+      }
 
       const data = await response.json();
       
