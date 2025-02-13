@@ -21,134 +21,135 @@ import {
 import { Sheet } from "@/components/ui/sheet";
 import { MBAJourney } from "@/components/MBAJourney";
 
+const defaultMBAData = {
+  Year_1: {
+    Autumn: {
+      Course_1: {
+        name: "Financial Accounting",
+        description: "Learn the fundamentals of financial accounting and reporting."
+      },
+      Course_2: {
+        name: "Microeconomics",
+        description: "Study principles of microeconomics and market behavior."
+      },
+      Course_3: {
+        name: "Leadership Development",
+        description: "Develop essential leadership and management skills."
+      },
+      Club_Options: ["Finance Club", "Consulting Club"],
+      Events: ["Fall Career Fair", "Leadership Workshop"]
+    },
+    Winter: {
+      Course_1: {
+        name: "Marketing Strategy",
+        description: "Learn key marketing concepts and strategic planning."
+      },
+      Course_2: {
+        name: "Data Analytics",
+        description: "Master data analysis techniques and tools."
+      },
+      Course_3: {
+        name: "Operations Management",
+        description: "Study operations and supply chain management."
+      },
+      Club_Options: ["Marketing Club", "Tech Club"],
+      Events: ["Winter Networking Event", "Analytics Conference"]
+    },
+    Spring: {
+      Course_1: {
+        name: "Corporate Finance",
+        description: "Study corporate financial management and strategy."
+      },
+      Course_2: {
+        name: "Strategic Management",
+        description: "Learn strategic planning and execution."
+      },
+      Course_3: {
+        name: "Business Analytics",
+        description: "Advanced business analytics applications."
+      },
+      Club_Options: ["Investment Club", "Strategy Club"],
+      Events: ["Spring Career Fair", "Strategy Summit"]
+    },
+    Summer: {
+      Internship: {
+        name: "Summer Internship Program",
+        description: "Gain hands-on experience in your chosen field."
+      }
+    }
+  },
+  Year_2: {
+    Autumn: {
+      Course_1: {
+        name: "Advanced Finance",
+        description: "Deep dive into advanced financial concepts."
+      },
+      Course_2: {
+        name: "Entrepreneurship",
+        description: "Learn startup fundamentals and venture creation."
+      },
+      Course_3: {
+        name: "Global Business",
+        description: "Study international business strategies."
+      },
+      Club_Options: ["Entrepreneurship Club", "Global Business Club"],
+      Events: ["Startup Competition", "Global Business Forum"]
+    },
+    Winter: {
+      Course_1: {
+        name: "Digital Innovation",
+        description: "Explore digital transformation strategies."
+      },
+      Course_2: {
+        name: "Negotiation",
+        description: "Master negotiation techniques and strategies."
+      },
+      Course_3: {
+        name: "Risk Management",
+        description: "Study risk assessment and management."
+      },
+      Club_Options: ["Innovation Club", "Leadership Club"],
+      Events: ["Innovation Summit", "Leadership Conference"]
+    },
+    Spring: {
+      Course_1: {
+        name: "Business Ethics",
+        description: "Study ethical decision-making in business."
+      },
+      Course_2: {
+        name: "Strategic Leadership",
+        description: "Advanced leadership development."
+      },
+      Course_3: {
+        name: "Capstone Project",
+        description: "Apply MBA knowledge to real-world projects."
+      },
+      Club_Options: ["Ethics Club", "Alumni Network"],
+      Events: ["Graduation Ceremony", "Final Presentation"]
+    },
+    Summer: {
+      Internship: {
+        name: "Career Transition",
+        description: "Prepare for post-MBA career opportunities."
+      }
+    }
+  }
+};
+
 const Index = () => {
   const { toast } = useToast();
   const [chatMessage, setChatMessage] = useState("");
   const [chatStarted, setChatStarted] = useState(false);
   const [chatHistory, setChatHistory] = useState<Array<{ role: 'user' | 'assistant', content: string }>>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const [MBA_Program_Type, setMBA_Program_Type] = useState("");
   const [MBA_Focus_Area, setMBA_Focus_Area] = useState("");
   const [Professional_Goals, setProfessional_Goals] = useState("");
   const [Extracurricular_Interests, setExtracurricular_Interests] = useState("");
-
+  const [mbaSchedule, setMBASchedule] = useState(defaultMBAData);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-
-  const defaultMBAData = {
-    Year_1: {
-      Autumn: {
-        Course_1: {
-          name: "Financial Accounting",
-          description: "Learn the fundamentals of financial accounting and reporting."
-        },
-        Course_2: {
-          name: "Microeconomics",
-          description: "Study principles of microeconomics and market behavior."
-        },
-        Course_3: {
-          name: "Leadership Development",
-          description: "Develop essential leadership and management skills."
-        },
-        Club_Options: ["Finance Club", "Consulting Club"],
-        Events: ["Fall Career Fair", "Leadership Workshop"]
-      },
-      Winter: {
-        Course_1: {
-          name: "Marketing Strategy",
-          description: "Learn key marketing concepts and strategic planning."
-        },
-        Course_2: {
-          name: "Data Analytics",
-          description: "Master data analysis techniques and tools."
-        },
-        Course_3: {
-          name: "Operations Management",
-          description: "Study operations and supply chain management."
-        },
-        Club_Options: ["Marketing Club", "Tech Club"],
-        Events: ["Winter Networking Event", "Analytics Conference"]
-      },
-      Spring: {
-        Course_1: {
-          name: "Corporate Finance",
-          description: "Study corporate financial management and strategy."
-        },
-        Course_2: {
-          name: "Strategic Management",
-          description: "Learn strategic planning and execution."
-        },
-        Course_3: {
-          name: "Business Analytics",
-          description: "Advanced business analytics applications."
-        },
-        Club_Options: ["Investment Club", "Strategy Club"],
-        Events: ["Spring Career Fair", "Strategy Summit"]
-      },
-      Summer: {
-        Internship: {
-          name: "Summer Internship Program",
-          description: "Gain hands-on experience in your chosen field."
-        }
-      }
-    },
-    Year_2: {
-      Autumn: {
-        Course_1: {
-          name: "Advanced Finance",
-          description: "Deep dive into advanced financial concepts."
-        },
-        Course_2: {
-          name: "Entrepreneurship",
-          description: "Learn startup fundamentals and venture creation."
-        },
-        Course_3: {
-          name: "Global Business",
-          description: "Study international business strategies."
-        },
-        Club_Options: ["Entrepreneurship Club", "Global Business Club"],
-        Events: ["Startup Competition", "Global Business Forum"]
-      },
-      Winter: {
-        Course_1: {
-          name: "Digital Innovation",
-          description: "Explore digital transformation strategies."
-        },
-        Course_2: {
-          name: "Negotiation",
-          description: "Master negotiation techniques and strategies."
-        },
-        Course_3: {
-          name: "Risk Management",
-          description: "Study risk assessment and management."
-        },
-        Club_Options: ["Innovation Club", "Leadership Club"],
-        Events: ["Innovation Summit", "Leadership Conference"]
-      },
-      Spring: {
-        Course_1: {
-          name: "Business Ethics",
-          description: "Study ethical decision-making in business."
-        },
-        Course_2: {
-          name: "Strategic Leadership",
-          description: "Advanced leadership development."
-        },
-        Course_3: {
-          name: "Capstone Project",
-          description: "Apply MBA knowledge to real-world projects."
-        },
-        Club_Options: ["Ethics Club", "Alumni Network"],
-        Events: ["Graduation Ceremony", "Final Presentation"]
-      },
-      Summer: {
-        Internship: {
-          name: "Career Transition",
-          description: "Prepare for post-MBA career opportunities."
-        }
-      }
-    }
-  };
 
   const handleStartChat = () => {
     setChatStarted(true);
@@ -227,7 +228,71 @@ const Index = () => {
       return;
     }
 
-    setIsSheetOpen(true);
+    setIsGenerating(true);
+
+    try {
+      const response = await fetch('https://api.dify.ai/v1/workflows/run', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer app-zA9ZDv20AN3bzw4fbTCis0KJ',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          inputs: {
+            MBA_Program_Type,
+            MBA_Focus_Area,
+            Professional_Goals,
+            Extracurricular_Interests
+          },
+          response_mode: "blocking",
+          user: "booth-mba-user"
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`API responded with status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.data && data.data.outputs) {
+        try {
+          let schedule;
+          if (typeof data.data.outputs === 'string') {
+            schedule = JSON.parse(data.data.outputs);
+          } else if (data.data.outputs.text) {
+            schedule = JSON.parse(data.data.outputs.text);
+          } else {
+            throw new Error('Invalid response format');
+          }
+
+          setMBASchedule(schedule);
+          setIsSheetOpen(true);
+          toast({
+            title: "Success",
+            description: "Your personalized MBA journey has been generated!",
+          });
+        } catch (error) {
+          console.error('Error parsing schedule:', error);
+          toast({
+            title: "Error",
+            description: "Unable to process the generated schedule. Please try again.",
+            variant: "destructive"
+          });
+        }
+      } else {
+        throw new Error('Invalid API response format');
+      }
+    } catch (error) {
+      console.error('Error generating schedule:', error);
+      toast({
+        title: "Error",
+        description: "Unable to generate your MBA schedule. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -443,9 +508,19 @@ const Index = () => {
                 <Button 
                   type="submit"
                   className="w-full bg-[#ea384c] hover:bg-[#d42d3d] text-white font-semibold"
+                  disabled={isGenerating}
                 >
-                  Generate Your MBA Journey
-                  <ArrowRight className="h-5 w-5 ml-2" />
+                  {isGenerating ? (
+                    <div className="flex items-center gap-2">
+                      <span className="animate-spin">⏳</span>
+                      Generating Your Journey...
+                    </div>
+                  ) : (
+                    <>
+                      Generate Your MBA Journey
+                      <ArrowRight className="h-5 w-5 ml-2" />
+                    </>
+                  )}
                 </Button>
               </form>
             </CardContent>
@@ -456,7 +531,7 @@ const Index = () => {
       <MBAJourney 
         isOpen={isSheetOpen}
         onOpenChange={setIsSheetOpen}
-        schedule={defaultMBAData}
+        schedule={mbaSchedule}
       />
     </div>
   );
