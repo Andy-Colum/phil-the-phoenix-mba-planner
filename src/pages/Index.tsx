@@ -39,7 +39,6 @@ const Index = () => {
   const [MBA_Focus_Area, setMBA_Focus_Area] = useState("");
   const [Professional_Goals, setProfessional_Goals] = useState("");
   const [Extracurricular_Interests, setExtracurricular_Interests] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
 
   const handleStartChat = () => {
     setChatStarted(true);
@@ -306,157 +305,6 @@ const Index = () => {
     };
   }
 
-  const [MBASchedule, setMBASchedule] = useState<MBASchedule>({
-    Year_1: {
-      Autumn: {
-        Course_1: {
-          name: "Financial Accounting",
-          description: "Learn the fundamentals of financial accounting."
-        },
-        Course_2: {
-          name: "Microeconomics",
-          description: "Explore the principles of microeconomics."
-        },
-        Course_3: {
-          name: "Leadership Development",
-          description: "Develop essential leadership skills."
-        },
-        Club_Options: [
-          "Investment Banking Group",
-          "Consulting Club"
-        ],
-        Events: [
-          "Fall Career Fair",
-          "Alumni Networking Night"
-        ]
-      },
-      Winter: {
-        Course_1: {
-          name: "Corporate Finance",
-          description: "Study corporate finance and investment strategies."
-        },
-        Course_2: {
-          name: "Marketing Strategy",
-          description: "Develop marketing strategies and tactics."
-        },
-        Course_3: {
-          name: "Operations Management",
-          description: "Learn about operations management and supply chain."
-        },
-        Club_Options: [
-          "Case Competition Club",
-          "Tech Group"
-        ],
-        Events: [
-          "Winter Conference",
-          "Industry Speaker Series"
-        ]
-      },
-      Spring: {
-        Course_1: {
-          name: "Managerial Accounting",
-          description: "Gain a deeper understanding of managerial accounting."
-        },
-        Course_2: {
-          name: "Business Strategy",
-          description: "Develop strategic business planning skills."
-        },
-        Course_3: {
-          name: "Data Analytics",
-          description: "Learn data analytics and its applications."
-        },
-        Club_Options: [
-          "Entrepreneurship Club",
-          "Social Impact Group"
-        ],
-        Events: [
-          "Spring Networking Event",
-          "Startup Pitch Competition"
-        ]
-      },
-      Summer: {
-        Internship: {
-          name: "Summer Internship Program",
-          description: "Gain hands-on experience in a real-world setting."
-        }
-      }
-    },
-    Year_2: {
-      Autumn: {
-        Course_1: {
-          name: "Advanced Finance",
-          description: "Study advanced financial concepts and models."
-        },
-        Course_2: {
-          name: "Strategic Leadership",
-          description: "Develop strategic leadership skills."
-        },
-        Course_3: {
-          name: "Global Markets",
-          description: "Explore global markets and international finance."
-        },
-        Club_Options: [
-          "Finance Club Leadership",
-          "Mentor Program"
-        ],
-        Events: [
-          "Leadership Summit",
-          "Career Trek"
-        ]
-      },
-      Winter: {
-        Course_1: {
-          name: "Negotiation",
-          description: "Learn the art of negotiation and conflict resolution."
-        },
-        Course_2: {
-          name: "Innovation Strategy",
-          description: "Develop innovative strategies and approaches."
-        },
-        Course_3: {
-          name: "Business Analytics",
-          description: "Learn business analytics and its applications."
-        },
-        Club_Options: [
-          "Venture Capital Club",
-          "Data Analytics Group"
-        ],
-        Events: [
-          "Winter Networking Event",
-          "Industry Panel"
-        ]
-      },
-      Spring: {
-        Course_1: {
-          name: "International Business",
-          description: "Study international business and global markets."
-        },
-        Course_2: {
-          name: "Entrepreneurial Finance",
-          description: "Learn about entrepreneurial finance and venture capital."
-        },
-        Course_3: {
-          name: "Digital Strategy",
-          description: "Develop digital strategy and innovation."
-        },
-        Club_Options: [
-          "Graduation Committee",
-          "Alumni Network"
-        ],
-        Events: [
-          "Graduation Gala",
-          "Final Presentation"
-        ]
-      },
-      Summer: {
-        Internship: {
-          name: "Post-MBA Career Transition",
-          description: "Prepare for your post-MBA career transition."
-        }
-      }
-    }
-  });
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -469,181 +317,74 @@ const Index = () => {
       return;
     }
 
-    setIsGenerating(true);
-
     try {
-      const response = await fetch('https://api.dify.ai/v1/workflows/run', {
+      const API_KEY = 'app-zA9ZDv20AN3bzw4fbTCis0KJ';
+      const BASE_URL = 'https://api.dify.ai/v1';
+
+      const runResponse = await fetch(`${BASE_URL}/workflows/run`, {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer app-BMVzb50wyz8hw04pC90s3Rig',
+          'Authorization': `Bearer ${API_KEY}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           inputs: {
-            MBA_Program_Type,
-            MBA_Focus_Area,
-            Professional_Goals,
-            Extracurricular_Interests
+            "MBA_Program_Type": MBA_Program_Type,
+            "MBA_Focus_Area": MBA_Focus_Area,
+            "Professional_Goals": Professional_Goals,
+            "Extracurricular_Interests": Extracurricular_Interests
           },
           response_mode: "blocking",
           user: "booth-mba-user"
         })
       });
 
-      if (!response.ok) {
-        throw new Error(`API responded with status: ${response.status}`);
+      if (!runResponse.ok) {
+        const errorData = await runResponse.json();
+        console.error('API Error:', errorData);
+        throw new Error(`API responded with status: ${runResponse.status}, message: ${errorData.message}`);
       }
 
-      const data = await response.json();
-      console.log('API Response:', JSON.stringify(data, null, 2));
-      
-      if (data.data && data.data.status === 'succeeded' && data.data.outputs) {
-        try {
-          const outputText = data.data.outputs.text;
-          
-          // Create a structured schedule object from the text output
-          const parsedSchedule: MBASchedule = {
-            Year_1: {
-              Autumn: {
-                Course_1: {
-                  name: "Introduction to Entrepreneurship and Innovation",
-                  description: "This course will provide a foundation in entrepreneurship and innovation, exploring topics such as opportunity recognition, business model development, and venture financing."
-                },
-                Course_2: {
-                  name: "Finance for Entrepreneurs",
-                  description: "This course will cover the fundamentals of finance with a focus on how it applies to entrepreneurs. Topics will include financial statement analysis, cash flow management, and raising capital."
-                },
-                Course_3: {
-                  name: "Technology and Innovation Strategy",
-                  description: "This course will explore the strategic management of technology and innovation in organizations. Topics will include technology adoption, competitive advantage through innovation, and managing technological change."
-                },
-                Club_Options: ["Entrepreneurship Club", "Finance Club", "Technology Club"],
-                Events: ["Entrepreneurship Panel", "Finance Networking Event"]
-              },
-              Winter: {
-                Course_1: {
-                  name: "Business Development and Sales",
-                  description: "This course will cover the skills and strategies needed to effectively develop and grow a business. Topics will include sales techniques, relationship building, and negotiation."
-                },
-                Course_2: {
-                  name: "Strategic Marketing",
-                  description: "This course will explore the principles of marketing strategy and how it can be applied to entrepreneurial ventures. Topics will include market research, branding, and digital marketing."
-                },
-                Course_3: {
-                  name: "Financial Analysis and Valuation",
-                  description: "This course will provide an in-depth understanding of financial analysis and valuation techniques. Topics will include financial statement analysis, business valuation, and investment decision-making."
-                },
-                Club_Options: ["Business Development Club", "Marketing Club", "Finance Club"],
-                Events: ["Business Development Workshop", "Marketing Conference"]
-              },
-              Spring: {
-                Course_1: {
-                  name: "Consulting Skills and Frameworks",
-                  description: "This course will introduce students to the skills and frameworks used in the consulting industry. Topics will include problem-solving, data analysis, and communication."
-                },
-                Course_2: {
-                  name: "Technology Entrepreneurship",
-                  description: "This course will focus on the unique challenges and opportunities of starting and growing a technology-based venture. Topics will include product development, intellectual property, and scaling."
-                },
-                Course_3: {
-                  name: "Leadership and Organizational Behavior",
-                  description: "This course will explore the theories and practices of leadership and organizational behavior. Topics will include motivation, team dynamics, and change management."
-                },
-                Club_Options: ["Consulting Club", "Entrepreneurship Club", "Leadership Club"],
-                Events: ["Consulting Case Competition", "Entrepreneurship Pitch Competition"]
-              },
-              Summer: {
-                Internship: {
-                  name: "Consulting Internship",
-                  description: "This internship will provide hands-on experience in a consulting firm, allowing you to apply your MBA knowledge and gain valuable industry insights."
-                }
-              }
-            },
-            Year_2: {
-              Autumn: {
-                Course_1: {
-                  name: "Advanced Entrepreneurship",
-                  description: "This course will build upon the foundational knowledge gained in the first year, focusing on advanced topics in entrepreneurship. Topics will include growth strategies, exit planning, and social entrepreneurship."
-                },
-                Course_2: {
-                  name: "Financial Technology",
-                  description: "This course will explore the intersection of finance and technology, with a focus on emerging trends and innovations in the industry. Topics will include blockchain, digital payments, and robo-advisors."
-                },
-                Course_3: {
-                  name: "Global Business Strategy",
-                  description: "This course will analyze the strategic challenges and opportunities faced by businesses operating in a global environment. Topics will include international expansion, cross-cultural management, and global supply chains."
-                },
-                Club_Options: ["Entrepreneurship Club", "Finance Club", "Strategy Club"],
-                Events: ["Entrepreneurship Conference", "Finance Speaker Series"]
-              },
-              Winter: {
-                Course_1: {
-                  name: "Private Equity and Venture Capital",
-                  description: "This course will provide an in-depth understanding of the private equity and venture capital industries. Topics will include deal sourcing, due diligence, and portfolio management."
-                },
-                Course_2: {
-                  name: "Data Analytics for Business",
-                  description: "This course will explore the use of data analytics in business decision-making. Topics will include data visualization, predictive modeling, and machine learning."
-                },
-                Course_3: {
-                  name: "Negotiation and Conflict Resolution",
-                  description: "This course will provide practical skills and strategies for effective negotiation and conflict resolution. Topics will include negotiation tactics, mediation, and cross-cultural negotiation."
-                },
-                Club_Options: ["Finance Club", "Data Analytics Club", "Negotiation Club"],
-                Events: ["Private Equity Panel", "Data Analytics Workshop"]
-              },
-              Spring: {
-                Course_1: {
-                  name: "Entrepreneurial Finance",
-                  description: "This course will focus on the financial aspects of starting and growing a new venture. Topics will include financial modeling, venture capital financing, and exit strategies."
-                },
-                Course_2: {
-                  name: "Innovation and Technology Management",
-                  description: "This course will explore the management of innovation and technology in organizations. Topics will include open innovation, technology adoption, and disruptive innovation."
-                },
-                Course_3: {
-                  name: "Leadership Development",
-                  description: "This course will provide opportunities for personal and professional growth as a leader. Topics will include self-awareness, emotional intelligence, and ethical leadership."
-                },
-                Club_Options: ["Entrepreneurship Club", "Technology Club", "Leadership Club"],
-                Events: ["Entrepreneurship Pitch Competition", "Technology Showcase"]
-              },
-              Summer: {
-                Internship: {
-                  name: "Consulting Internship",
-                  description: "This internship will provide an opportunity to further develop consulting skills and gain additional industry experience."
-                }
-              }
-            }
-          };
+      const difyResponse: DifyResponse = await runResponse.json();
+      console.log("Dify API Response:", difyResponse);
 
-          setMBASchedule(parsedSchedule);
+      if (difyResponse.data.status === 'succeeded' && difyResponse.data.outputs) {
+        try {
+          const scheduleData: MBASchedule = difyResponse.data.outputs;
+          console.log("Schedule Data:", scheduleData);
+          setSampleMBAData(scheduleData);
           setIsSheetOpen(true);
           
           toast({
             title: "Success",
-            description: `Schedule generated in ${data.data.elapsed_time?.toFixed(2) || 0} seconds!`,
+            description: `Your MBA schedule has been generated in ${difyResponse.data.elapsed_time?.toFixed(2) || 0} seconds!`,
           });
-        } catch (error) {
-          console.error('Error processing schedule:', error);
+        } catch (parseError) {
+          console.error('Error processing schedule data:', parseError);
           toast({
             title: "Error",
             description: "Unable to process the schedule data. Please try again.",
             variant: "destructive"
           });
         }
-      } else if (data.data?.status === 'failed') {
-        throw new Error(data.data.error || 'Failed to generate schedule');
+      } else if (difyResponse.data.status === 'failed') {
+        throw new Error(difyResponse.data.error || 'Failed to generate MBA schedule');
+      } else if (difyResponse.data.status === 'stopped') {
+        toast({
+          title: "Generation Stopped",
+          description: "The schedule generation was stopped. Please try again.",
+          variant: "destructive"
+        });
+      } else {
+        throw new Error('Unexpected response status from API');
       }
     } catch (error) {
       console.error('Error:', error);
       toast({
         title: "Error",
-        description: "Unable to generate your MBA schedule. Please try again later.",
+        description: typeof error === 'string' ? error : "Unable to generate your MBA schedule. Please try again later.",
         variant: "destructive"
       });
-    } finally {
-      setIsGenerating(false);
     }
   };
 
@@ -931,16 +672,63 @@ const Index = () => {
                 </div>
 
                 <Button 
-                  type="submit" 
-                  className="bg-[#ea384c] hover:bg-[#d42d3d] text-white font-semibold px-6 py-3 rounded-lg flex items-center gap-2 animate-fade-in"
+                  type="submit"
+                  className="w-full bg-[#ea384c] hover:bg-[#d42d3d] text-white font-semibold"
                 >
-                  Generate Schedule
+                  Generate Your MBA Journey
+                  <ArrowRight className="h-5 w-5 ml-2" />
                 </Button>
               </form>
             </CardContent>
           </Card>
         </div>
       </div>
+
+      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+        <SheetContent 
+          side="bottom" 
+          className="w-[90%] sm:w-[540px] h-[80vh] fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg overflow-y-auto"
+        >
+          <SheetHeader>
+            <SheetTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Your Two-Year MBA Journey at Booth
+            </SheetTitle>
+          </SheetHeader>
+          
+          <div className="mt-6 space-y-8">
+            <div>
+              <h3 className="text-xl font-semibold mb-4">Year 1</h3>
+              <div className="space-y-4">
+                <TermBlock data={sampleMBAData.Year_1.Autumn} term="Autumn Quarter" />
+                <TermBlock data={sampleMBAData.Year_1.Winter} term="Winter Quarter" />
+                <TermBlock data={sampleMBAData.Year_1.Spring} term="Spring Quarter" />
+                <TermBlock data={sampleMBAData.Year_1.Summer} term="Summer" />
+              </div>
+            </div>
+
+            <Separator className="my-6" />
+
+            <div>
+              <h3 className="text-xl font-semibold mb-4">Year 2</h3>
+              <div className="space-y-4">
+                <TermBlock data={sampleMBAData.Year_2.Autumn} term="Autumn Quarter" />
+                <TermBlock data={sampleMBAData.Year_2.Winter} term="Winter Quarter" />
+                <TermBlock data={sampleMBAData.Year_2.Spring} term="Spring Quarter" />
+                <TermBlock data={sampleMBAData.Year_2.Summer} term="Summer" />
+              </div>
+            </div>
+
+            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+              <h4 className="font-medium mb-2">AI-Generated Insights</h4>
+              <p className="text-sm text-gray-600">
+                Based on your interests in {MBA_Focus_Area?.replace(/_/g, ' ')} and {Extracurricular_Interests}, 
+                here are some recommended courses and activities tailored to your goals: {Professional_Goals}
+              </p>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };
