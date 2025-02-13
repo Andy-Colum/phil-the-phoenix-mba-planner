@@ -40,6 +40,170 @@ const Index = () => {
   const [Professional_Goals, setProfessional_Goals] = useState("");
   const [Extracurricular_Interests, setExtracurricular_Interests] = useState("");
 
+  const defaultMBASchedule: MBASchedule = {
+    Year_1: {
+      Autumn: {
+        Course_1: { name: "", description: "" },
+        Course_2: { name: "", description: "" },
+        Course_3: { name: "", description: "" },
+        Club_Options: [],
+        Events: []
+      },
+      Winter: {
+        Course_1: { name: "", description: "" },
+        Course_2: { name: "", description: "" },
+        Course_3: { name: "", description: "" },
+        Club_Options: [],
+        Events: []
+      },
+      Spring: {
+        Course_1: { name: "", description: "" },
+        Course_2: { name: "", description: "" },
+        Course_3: { name: "", description: "" },
+        Club_Options: [],
+        Events: []
+      },
+      Summer: {
+        Internship: { name: "", description: "" }
+      }
+    },
+    Year_2: {
+      Autumn: {
+        Course_1: { name: "", description: "" },
+        Course_2: { name: "", description: "" },
+        Course_3: { name: "", description: "" },
+        Club_Options: [],
+        Events: []
+      },
+      Winter: {
+        Course_1: { name: "", description: "" },
+        Course_2: { name: "", description: "" },
+        Course_3: { name: "", description: "" },
+        Club_Options: [],
+        Events: []
+      },
+      Spring: {
+        Course_1: { name: "", description: "" },
+        Course_2: { name: "", description: "" },
+        Course_3: { name: "", description: "" },
+        Club_Options: [],
+        Events: []
+      },
+      Summer: {
+        Internship: { name: "", description: "" }
+      }
+    }
+  };
+
+  const [sampleMBAData, setSampleMBAData] = useState<MBASchedule>(defaultMBASchedule);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!MBA_Program_Type || !MBA_Focus_Area || !Professional_Goals || !Extracurricular_Interests) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all fields before generating your MBA schedule.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch('https://api.dify.ai/v1/workflows/run', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer app-zA9ZDv20AN3bzw4fbTCis0KJ',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          inputs: {
+            MBA_Program_Type,
+            MBA_Focus_Area,
+            Professional_Goals,
+            Extracurricular_Interests
+          },
+          response_mode: "blocking",
+          user: "booth-mba-user"
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`API responded with status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Dify API Response:', data);
+
+      if (data.answer) {
+        try {
+          const scheduleData: MBASchedule = JSON.parse(data.answer);
+          
+          // Validate the parsed data has the required structure
+          if (scheduleData?.Year_1?.Autumn && scheduleData?.Year_2?.Autumn) {
+            setSampleMBAData(scheduleData);
+            setIsSheetOpen(true);
+            
+            toast({
+              title: "Success",
+              description: "Your MBA schedule has been generated successfully!",
+            });
+          } else {
+            throw new Error('Invalid schedule data structure');
+          }
+        } catch (parseError) {
+          console.error('Error parsing schedule:', parseError);
+          toast({
+            title: "Error",
+            description: "Unable to process the schedule data. Please try again.",
+            variant: "destructive"
+          });
+        }
+      } else {
+        throw new Error('No answer received from API');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: "Unable to generate your MBA schedule. Please try again later.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  type CourseData = {
+    name: string;
+    description: string;
+  };
+
+  type TermData = {
+    Course_1: CourseData;
+    Course_2: CourseData;
+    Course_3: CourseData;
+    Club_Options: string[];
+    Events: string[];
+  };
+
+  type SummerData = {
+    Internship: {
+      name: string;
+      description: string;
+    };
+  };
+
+  type YearData = {
+    Autumn: TermData;
+    Winter: TermData;
+    Spring: TermData;
+    Summer: SummerData;
+  };
+
+  type MBASchedule = {
+    Year_1: YearData;
+    Year_2: YearData;
+  };
+
   const handleStartChat = () => {
     setChatStarted(true);
     setChatHistory([{ 
@@ -102,289 +266,6 @@ const Index = () => {
       }]);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  type CourseData = {
-    name: string;
-    description: string;
-  };
-
-  type TermData = {
-    Course_1: CourseData;
-    Course_2: CourseData;
-    Course_3: CourseData;
-    Club_Options: string[];
-    Events: string[];
-  };
-
-  type SummerData = {
-    Internship: {
-      name: string;
-      description: string;
-    };
-  };
-
-  type YearData = {
-    Autumn: TermData;
-    Winter: TermData;
-    Spring: TermData;
-    Summer: SummerData;
-  };
-
-  type MBASchedule = {
-    Year_1: YearData;
-    Year_2: YearData;
-  };
-
-  const [sampleMBAData, setSampleMBAData] = useState<MBASchedule>({
-    Year_1: {
-      Autumn: {
-        Course_1: {
-          name: "Financial Accounting",
-          description: "Learn the fundamentals of financial accounting."
-        },
-        Course_2: {
-          name: "Microeconomics",
-          description: "Explore the principles of microeconomics."
-        },
-        Course_3: {
-          name: "Leadership Development",
-          description: "Develop essential leadership skills."
-        },
-        Club_Options: [
-          "Investment Banking Group",
-          "Consulting Club"
-        ],
-        Events: [
-          "Fall Career Fair",
-          "Alumni Networking Night"
-        ]
-      },
-      Winter: {
-        Course_1: {
-          name: "Corporate Finance",
-          description: "Study corporate finance and investment strategies."
-        },
-        Course_2: {
-          name: "Marketing Strategy",
-          description: "Develop marketing strategies and tactics."
-        },
-        Course_3: {
-          name: "Operations Management",
-          description: "Learn about operations management and supply chain."
-        },
-        Club_Options: [
-          "Case Competition Club",
-          "Tech Group"
-        ],
-        Events: [
-          "Winter Conference",
-          "Industry Speaker Series"
-        ]
-      },
-      Spring: {
-        Course_1: {
-          name: "Managerial Accounting",
-          description: "Gain a deeper understanding of managerial accounting."
-        },
-        Course_2: {
-          name: "Business Strategy",
-          description: "Develop strategic business planning skills."
-        },
-        Course_3: {
-          name: "Data Analytics",
-          description: "Learn data analytics and its applications."
-        },
-        Club_Options: [
-          "Entrepreneurship Club",
-          "Social Impact Group"
-        ],
-        Events: [
-          "Spring Networking Event",
-          "Startup Pitch Competition"
-        ]
-      },
-      Summer: {
-        Internship: {
-          name: "Summer Internship Program",
-          description: "Gain hands-on experience in a real-world setting."
-        }
-      }
-    },
-    Year_2: {
-      Autumn: {
-        Course_1: {
-          name: "Advanced Finance",
-          description: "Study advanced financial concepts and models."
-        },
-        Course_2: {
-          name: "Strategic Leadership",
-          description: "Develop strategic leadership skills."
-        },
-        Course_3: {
-          name: "Global Markets",
-          description: "Explore global markets and international finance."
-        },
-        Club_Options: [
-          "Finance Club Leadership",
-          "Mentor Program"
-        ],
-        Events: [
-          "Leadership Summit",
-          "Career Trek"
-        ]
-      },
-      Winter: {
-        Course_1: {
-          name: "Negotiation",
-          description: "Learn the art of negotiation and conflict resolution."
-        },
-        Course_2: {
-          name: "Innovation Strategy",
-          description: "Develop innovative strategies and approaches."
-        },
-        Course_3: {
-          name: "Business Analytics",
-          description: "Learn business analytics and its applications."
-        },
-        Club_Options: [
-          "Venture Capital Club",
-          "Data Analytics Group"
-        ],
-        Events: [
-          "Winter Networking Event",
-          "Industry Panel"
-        ]
-      },
-      Spring: {
-        Course_1: {
-          name: "International Business",
-          description: "Study international business and global markets."
-        },
-        Course_2: {
-          name: "Entrepreneurial Finance",
-          description: "Learn about entrepreneurial finance and venture capital."
-        },
-        Course_3: {
-          name: "Digital Strategy",
-          description: "Develop digital strategy and innovation."
-        },
-        Club_Options: [
-          "Graduation Committee",
-          "Alumni Network"
-        ],
-        Events: [
-          "Graduation Gala",
-          "Final Presentation"
-        ]
-      },
-      Summer: {
-        Internship: {
-          name: "Post-MBA Career Transition",
-          description: "Prepare for your post-MBA career transition."
-        }
-      }
-    }
-  });
-
-  interface DifyResponse {
-    workflow_run_id: string;
-    task_id: string;
-    data: {
-      id: string;
-      workflow_id: string;
-      status: 'running' | 'succeeded' | 'failed' | 'stopped';
-      outputs?: MBASchedule;
-      error?: string;
-      elapsed_time?: number;
-      total_tokens?: number;
-      total_steps?: number;
-      created_at: string;
-      finished_at?: string;
-    };
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!MBA_Program_Type || !MBA_Focus_Area || !Professional_Goals || !Extracurricular_Interests) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all fields before generating your MBA schedule.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    try {
-      const API_KEY = 'app-zA9ZDv20AN3bzw4fbTCis0KJ';
-      const BASE_URL = 'https://api.dify.ai/v1';
-
-      const runResponse = await fetch(`${BASE_URL}/workflows/run`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${API_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          inputs: {
-            "MBA_Program_Type": MBA_Program_Type,
-            "MBA_Focus_Area": MBA_Focus_Area,
-            "Professional_Goals": Professional_Goals,
-            "Extracurricular_Interests": Extracurricular_Interests
-          },
-          response_mode: "blocking",
-          user: "booth-mba-user"
-        })
-      });
-
-      if (!runResponse.ok) {
-        const errorData = await runResponse.json();
-        console.error('API Error:', errorData);
-        throw new Error(`API responded with status: ${runResponse.status}, message: ${errorData.message}`);
-      }
-
-      const difyResponse: DifyResponse = await runResponse.json();
-      console.log("Dify API Response:", difyResponse);
-
-      if (difyResponse.data.status === 'succeeded' && difyResponse.data.outputs) {
-        try {
-          const scheduleData: MBASchedule = difyResponse.data.outputs;
-          console.log("Schedule Data:", scheduleData);
-          setSampleMBAData(scheduleData);
-          setIsSheetOpen(true);
-          
-          toast({
-            title: "Success",
-            description: `Your MBA schedule has been generated in ${difyResponse.data.elapsed_time?.toFixed(2) || 0} seconds!`,
-          });
-        } catch (parseError) {
-          console.error('Error processing schedule data:', parseError);
-          toast({
-            title: "Error",
-            description: "Unable to process the schedule data. Please try again.",
-            variant: "destructive"
-          });
-        }
-      } else if (difyResponse.data.status === 'failed') {
-        throw new Error(difyResponse.data.error || 'Failed to generate MBA schedule');
-      } else if (difyResponse.data.status === 'stopped') {
-        toast({
-          title: "Generation Stopped",
-          description: "The schedule generation was stopped. Please try again.",
-          variant: "destructive"
-        });
-      } else {
-        throw new Error('Unexpected response status from API');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      toast({
-        title: "Error",
-        description: typeof error === 'string' ? error : "Unable to generate your MBA schedule. Please try again later.",
-        variant: "destructive"
-      });
     }
   };
 
