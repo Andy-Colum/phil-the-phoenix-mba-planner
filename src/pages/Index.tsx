@@ -136,7 +136,7 @@ const Index = () => {
     };
     
     try {
-      const response = await fetch('https://api.dify.ai/v1/completion-messages', {
+      const response = await fetch('https://api.dify.ai/v1/chat-messages', {
         method: 'POST',
         headers: {
           'Authorization': 'Bearer app-BMVzb50wyz8hw04pC90s3Rig',
@@ -150,6 +150,7 @@ const Index = () => {
             Goals: ${Professional_Goals}, 
             Interests: ${Extracurricular_Interests}`,
           response_mode: "blocking",
+          conversation_id: "",
           user: "booth-mba-user",
         })
       });
@@ -161,9 +162,9 @@ const Index = () => {
       const data = await response.json();
       console.log("API Response:", data);
 
-      if (data.text) {
+      if (data.answer) {
         try {
-          const scheduleData = JSON.parse(data.text);
+          const scheduleData = JSON.parse(data.answer);
           console.log("Parsed Schedule Data:", scheduleData);
         } catch (parseError) {
           console.error('Error parsing schedule JSON:', parseError);
