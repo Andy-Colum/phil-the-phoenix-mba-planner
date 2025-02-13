@@ -135,9 +135,9 @@ const Index = () => {
       const data = await response.json();
       console.log('Dify API Response:', data);
 
-      if (data.answer) {
+      if (data?.data?.outputs?.output) {
         try {
-          const scheduleData: MBASchedule = JSON.parse(data.answer);
+          const scheduleData: MBASchedule = JSON.parse(data.data.outputs.output);
           
           // Validate the parsed data has the required structure
           if (scheduleData?.Year_1?.Autumn && scheduleData?.Year_2?.Autumn) {
@@ -160,7 +160,7 @@ const Index = () => {
           });
         }
       } else {
-        throw new Error('No answer received from API');
+        throw new Error('No output received from API');
       }
     } catch (error) {
       console.error('Error:', error);
