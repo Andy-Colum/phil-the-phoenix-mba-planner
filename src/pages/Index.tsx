@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/lib/supabase";
 import { 
   GraduationCap, 
   Moon, 
@@ -148,10 +149,20 @@ const Index = () => {
     setIsGenerating(true);
 
     try {
+      const { data: { value: workflowApiKey }, error: workflowKeyError } = await supabase
+        .from('secrets')
+        .select('value')
+        .eq('name', 'DIFY_WORKFLOW_API_KEY')
+        .single();
+
+      if (workflowKeyError || !workflowApiKey) {
+        throw new Error('Unable to access API key');
+      }
+
       const response = await fetch('https://api.dify.ai/v1/workflows/run', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer app-zA9ZDv20AN3bzw4fbTCis0KJ',
+          'Authorization': `Bearer ${workflowApiKey}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -368,10 +379,20 @@ const Index = () => {
     setIsLoading(true);
     
     try {
+      const { data: { value: chatApiKey }, error: chatKeyError } = await supabase
+        .from('secrets')
+        .select('value')
+        .eq('name', 'DIFY_CHAT_API_KEY')
+        .single();
+
+      if (chatKeyError || !chatApiKey) {
+        throw new Error('Unable to access API key');
+      }
+
       const response = await fetch('https://api.dify.ai/v1/chat-messages', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer app-BMVzb50wyz8hw04pC90s3Rig',
+          'Authorization': `Bearer ${chatApiKey}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
