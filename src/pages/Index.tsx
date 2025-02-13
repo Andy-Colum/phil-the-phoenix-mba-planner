@@ -16,8 +16,7 @@ import {
   ArrowRight,
   BookOpen,
   Users,
-  Calendar,
-  Loader
+  Calendar
 } from "lucide-react";
 import { jsPDF } from "jspdf";
 import { MBASchedule, defaultMBASchedule, YearData, TermData, SummerData, CourseData } from "@/types/mba";
@@ -616,34 +615,40 @@ const Index = () => {
                       <SelectValue placeholder="Choose your focus" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Finance">
-                        <span className="flex items-center gap-2">
-                          <GraduationCap className="h-4 w-4" />
-                          Finance
-                        </span>
-                      </SelectItem>
-                      <SelectItem value="Marketing">
+                      <SelectItem value="Finance_Accounting">
                         <span className="flex items-center gap-2">
                           <Briefcase className="h-4 w-4" />
-                          Marketing
+                          Finance & Accounting
                         </span>
                       </SelectItem>
-                      <SelectItem value="Entrepreneurship">
+                      <SelectItem value="Entrepreneurship_Innovation">
                         <span className="flex items-center gap-2">
                           <Sun className="h-4 w-4" />
-                          Entrepreneurship
+                          Entrepreneurship & Innovation
                         </span>
                       </SelectItem>
-                      <SelectItem value="Strategy">
+                      <SelectItem value="Marketing_Strategy">
                         <span className="flex items-center gap-2">
                           <Moon className="h-4 w-4" />
-                          Strategy
+                          Marketing & Strategy
                         </span>
                       </SelectItem>
-                      <SelectItem value="Operations">
+                      <SelectItem value="Data_Analytics_Tech">
+                        <span className="flex items-center gap-2">
+                          <GraduationCap className="h-4 w-4" />
+                          Data Analytics & Tech
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="International_Business">
                         <span className="flex items-center gap-2">
                           <Briefcase className="h-4 w-4" />
-                          Operations
+                          International Business
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="Public_Policy_Impact">
+                        <span className="flex items-center gap-2">
+                          <Users className="h-4 w-4" />
+                          Public Policy & Impact
                         </span>
                       </SelectItem>
                     </SelectContent>
@@ -653,35 +658,36 @@ const Index = () => {
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Step 3: Professional Goals</label>
                   <Input
-                    placeholder="What are your career aspirations and professional objectives?"
                     value={Professional_Goals}
                     onChange={(e) => setProfessional_Goals(e.target.value)}
-                    className="w-full"
+                    placeholder="What are your career aspirations?"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Step 4: Extracurricular Interests</label>
                   <Input
-                    placeholder="What activities, clubs, or experiences interest you?"
                     value={Extracurricular_Interests}
                     onChange={(e) => setExtracurricular_Interests(e.target.value)}
-                    className="w-full"
+                    placeholder="What activities interest you?"
                   />
                 </div>
 
                 <Button 
                   type="submit"
-                  className="w-full bg-[#ea384c] hover:bg-[#d42d3d]"
+                  className="w-full bg-[#ea384c] hover:bg-[#d42d3d] text-white"
                   disabled={isGenerating}
                 >
                   {isGenerating ? (
                     <div className="flex items-center gap-2">
                       <span className="animate-spin">⌛</span>
-                      Generating...
+                      Generating Your MBA Journey...
                     </div>
                   ) : (
-                    "Generate Your MBA Schedule"
+                    <div className="flex items-center justify-center gap-2">
+                      Generate Your MBA Journey
+                      <ArrowRight className="h-5 w-5" />
+                    </div>
                   )}
                 </Button>
               </form>
