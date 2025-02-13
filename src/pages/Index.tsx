@@ -300,82 +300,8 @@ const Index = () => {
       return;
     }
 
-    const systemPrompt = `
-      You are an AI assistant that generates detailed MBA schedules. Your response must be a valid JSON string containing a schedule that follows this schema exactly. Do not include any other text in your response, just the JSON object:
-      {
-        "Year_1": {
-          "Autumn": {
-            "Course_1": { "name": "string", "description": "string" },
-            "Course_2": { "name": "string", "description": "string" },
-            "Course_3": { "name": "string", "description": "string" },
-            "Club_Options": ["string"],
-            "Events": ["string"]
-          },
-          "Winter": {
-            "Course_1": { "name": "string", "description": "string" },
-            "Course_2": { "name": "string", "description": "string" },
-            "Course_3": { "name": "string", "description": "string" },
-            "Club_Options": ["string"],
-            "Events": ["string"]
-          },
-          "Spring": {
-            "Course_1": { "name": "string", "description": "string" },
-            "Course_2": { "name": "string", "description": "string" },
-            "Course_3": { "name": "string", "description": "string" },
-            "Club_Options": ["string"],
-            "Events": ["string"]
-          },
-          "Summer": {
-            "Internship": {
-              "name": "string",
-              "description": "string"
-            }
-          }
-        },
-        "Year_2": {
-          "Autumn": {
-            "Course_1": { "name": "string", "description": "string" },
-            "Course_2": { "name": "string", "description": "string" },
-            "Course_3": { "name": "string", "description": "string" },
-            "Club_Options": ["string"],
-            "Events": ["string"]
-          },
-          "Winter": {
-            "Course_1": { "name": "string", "description": "string" },
-            "Course_2": { "name": "string", "description": "string" },
-            "Course_3": { "name": "string", "description": "string" },
-            "Club_Options": ["string"],
-            "Events": ["string"]
-          },
-          "Spring": {
-            "Course_1": { "name": "string", "description": "string" },
-            "Course_2": { "name": "string", "description": "string" },
-            "Course_3": { "name": "string", "description": "string" },
-            "Club_Options": ["string"],
-            "Events": ["string"]
-          },
-          "Summer": {
-            "Internship": {
-              "name": "string",
-              "description": "string"
-            }
-          }
-        }
-      }
-    `;
-
-    const userQuery = `
-      Based on these preferences, generate a detailed two-year MBA schedule in JSON format:
-      1. Program Type: ${MBA_Program_Type}
-      2. Focus Area: ${MBA_Focus_Area}
-      3. Professional Goals: ${Professional_Goals}
-      4. Extracurricular Interests: ${Extracurricular_Interests}
-      
-      The response must be ONLY the JSON object following the exact schema provided, with no additional text or explanation.
-    `;
-    
     try {
-      const response = await fetch('https://api.dify.ai/v1/chat-messages', {
+      const response = await fetch('https://api.dify.ai/v1/workflows/run', {
         method: 'POST',
         headers: {
           'Authorization': 'Bearer app-BMVzb50wyz8hw04pC90s3Rig',
@@ -385,13 +311,14 @@ const Index = () => {
           inputs: {
             program_type: MBA_Program_Type,
             focus_area: MBA_Focus_Area,
-            goals: Professional_Goals,
-            interests: Extracurricular_Interests
+            professional_goals: Professional_Goals,
+            extracurricular_interests: Extracurricular_Interests
           },
-          query: userQuery,
-          system_prompt: systemPrompt,
-          response_mode: "blocking",
-          user: "booth-mba-user"
+          query: `Generate a detailed MBA schedule for a ${MBA_Program_Type} program with focus on ${MBA_Focus_Area}. 
+                 Professional Goals: ${Professional_Goals}
+                 Extracurricular Interests: ${Extracurricular_Interests}`,
+          user: "booth-mba-user",
+          response_mode: "blocking"
         })
       });
 
@@ -400,30 +327,29 @@ const Index = () => {
       }
 
       const data = await response.json();
-      console.log("API Response:", data);
+      console.log("Dify API Response:", data);
 
-      if (data.answer) {
+      if (data.data?.outputs?.schedule) {
         try {
-          // Try to find JSON object in the response
-          const jsonMatch = data.answer.match(/\{[\s\S]*\}/);
-          if (!jsonMatch) {
-            throw new Error('No valid JSON found in response');
-          }
-          
-          const scheduleData: MBASchedule = JSON.parse(jsonMatch[0]);
+          const scheduleData: MBASchedule = JSON.parse(data.data.outputs.schedule);
           console.log("Parsed Schedule Data:", scheduleData);
-          
-          // Set the sample data for testing
           setSampleMBAData(scheduleData);
           setIsSheetOpen(true);
         } catch (parseError) {
-          console.error('Error parsing JSON:', parseError);
+          console.error('Error parsing schedule JSON:', parseError);
           toast({
             title: "Error",
             description: "Unable to process the schedule data. Please try again.",
             variant: "destructive"
           });
         }
+      } else {
+        console.error('No schedule data in response:', data);
+        toast({
+          title: "Error",
+          description: "No schedule data received. Please try again.",
+          variant: "destructive"
+        });
       }
     } catch (error) {
       console.error('Error:', error);
