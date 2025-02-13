@@ -153,7 +153,21 @@ const Index = () => {
       You are an AI assistant that generates detailed MBA schedules. Please provide a comprehensive two-year schedule following this exact JSON schema:
       {
         "Year_1": {
-          "Autumn/Winter/Spring": {
+          "Autumn": {
+            "Course_1": { "name": "string", "description": "string" },
+            "Course_2": { "name": "string", "description": "string" },
+            "Course_3": { "name": "string", "description": "string" },
+            "Club_Options": ["string"],
+            "Events": ["string"]
+          },
+          "Winter": {
+            "Course_1": { "name": "string", "description": "string" },
+            "Course_2": { "name": "string", "description": "string" },
+            "Course_3": { "name": "string", "description": "string" },
+            "Club_Options": ["string"],
+            "Events": ["string"]
+          },
+          "Spring": {
             "Course_1": { "name": "string", "description": "string" },
             "Course_2": { "name": "string", "description": "string" },
             "Course_3": { "name": "string", "description": "string" },
@@ -161,14 +175,42 @@ const Index = () => {
             "Events": ["string"]
           },
           "Summer": {
-            "Internship": { "name": "string", "description": "string" }
+            "Internship": {
+              "name": "string",
+              "description": "string"
+            }
           }
         },
         "Year_2": {
-          // Same structure as Year_1
+          "Autumn": {
+            "Course_1": { "name": "string", "description": "string" },
+            "Course_2": { "name": "string", "description": "string" },
+            "Course_3": { "name": "string", "description": "string" },
+            "Club_Options": ["string"],
+            "Events": ["string"]
+          },
+          "Winter": {
+            "Course_1": { "name": "string", "description": "string" },
+            "Course_2": { "name": "string", "description": "string" },
+            "Course_3": { "name": "string", "description": "string" },
+            "Club_Options": ["string"],
+            "Events": ["string"]
+          },
+          "Spring": {
+            "Course_1": { "name": "string", "description": "string" },
+            "Course_2": { "name": "string", "description": "string" },
+            "Course_3": { "name": "string", "description": "string" },
+            "Club_Options": ["string"],
+            "Events": ["string"]
+          },
+          "Summer": {
+            "Internship": {
+              "name": "string",
+              "description": "string"
+            }
+          }
         }
       }
-      Ensure all course names and descriptions are relevant to the student's preferences.
     `;
 
     const userQuery = `
@@ -178,7 +220,7 @@ const Index = () => {
       3. Professional Goals: ${Professional_Goals}
       4. Extracurricular Interests: ${Extracurricular_Interests}
       
-      Generate a detailed two-year MBA schedule that matches this profile. Include relevant courses, club recommendations, and events.
+      Generate a detailed two-year MBA schedule that matches this profile. Include relevant courses, club recommendations, and events. The response MUST follow the exact JSON schema provided.
     `;
     
     try {
@@ -250,17 +292,18 @@ const Index = () => {
               <div>
                 <h5 className="font-medium text-sm text-gray-700 mb-2">Courses</h5>
                 <div className="space-y-3">
-                  {Object.entries((data as TermData))
-                    .filter(([key]) => key.startsWith('Course'))
-                    .map(([key, course]) => (
-                      <div key={key} className="bg-white p-3 rounded-lg shadow-sm">
+                  {(['Course_1', 'Course_2', 'Course_3'] as const).map((courseKey) => {
+                    const course = (data as TermData)[courseKey];
+                    return (
+                      <div key={courseKey} className="bg-white p-3 rounded-lg shadow-sm">
                         <div className="flex items-center gap-2">
                           <BookOpen className="h-4 w-4 text-[#ea384c]" />
                           <h6 className="font-medium">{course.name}</h6>
                         </div>
                         <p className="text-sm text-gray-600 mt-1 ml-6">{course.description}</p>
                       </div>
-                    ))}
+                    );
+                  })}
                 </div>
               </div>
               <div>
