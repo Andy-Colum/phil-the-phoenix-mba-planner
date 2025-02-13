@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/lib/supabase"; // Add this import
+import { supabase } from "@/lib/supabase";
 import { 
   GraduationCap, 
   Moon, 
@@ -69,19 +68,10 @@ const Index = () => {
     setIsLoading(true);
     
     try {
-      // First, get the API key from Supabase
-      const { data: secretData, error: secretError } = await supabase
-        .from('vault.secrets')
-        .select('secret')
-        .eq('name', 'DifyMBAkey')
-        .single();
-
-      if (secretError) throw new Error('Failed to retrieve API key');
-      
       const response = await fetch('https://api.dify.ai/v1/chat-messages', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${secretData.secret}`,
+          'Authorization': 'Bearer app-BMVzb50wyz8hw04pC90s3Rig',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
