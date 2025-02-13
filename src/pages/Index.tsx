@@ -288,6 +288,23 @@ const Index = () => {
     }
   });
 
+  interface DifyResponse {
+    workflow_run_id: string;
+    task_id: string;
+    data: {
+      id: string;
+      workflow_id: string;
+      status: 'running' | 'succeeded' | 'failed' | 'stopped';
+      outputs?: MBASchedule;
+      error?: string;
+      elapsed_time?: number;
+      total_tokens?: number;
+      total_steps?: number;
+      created_at: string;
+      finished_at?: string;
+    };
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -317,7 +334,7 @@ const Index = () => {
             "Professional_Goals": Professional_Goals,
             "Extracurricular_Interests": Extracurricular_Interests
           },
-          response_mode: "streaming",
+          response_mode: "blocking",
           user: "booth-mba-user"
         })
       });
@@ -328,19 +345,19 @@ const Index = () => {
         throw new Error(`API responded with status: ${runResponse.status}, message: ${errorData.message}`);
       }
 
-      const runData = await runResponse.json();
-      console.log("API Response:", runData);
+      const difyResponse: DifyResponse = await runResponse.json();
+      console.log("Dify API Response:", difyResponse);
 
-      if (runData.outputs) {
+      if (difyResponse.data.status === 'succeeded' && difyResponse.data.outputs) {
         try {
-          const scheduleData: MBASchedule = runData.outputs;
+          const scheduleData: MBASchedule = difyResponse.data.outputs;
           console.log("Schedule Data:", scheduleData);
           setSampleMBAData(scheduleData);
           setIsSheetOpen(true);
           
           toast({
             title: "Success",
-            description: "Your MBA schedule has been generated successfully!",
+            description: `Your MBA schedule has been generated in ${difyResponse.data.elapsed_time?.toFixed(2) || 0} seconds!`,
           });
         } catch (parseError) {
           console.error('Error processing schedule data:', parseError);
@@ -350,8 +367,16 @@ const Index = () => {
             variant: "destructive"
           });
         }
+      } else if (difyResponse.data.status === 'failed') {
+        throw new Error(difyResponse.data.error || 'Failed to generate MBA schedule');
+      } else if (difyResponse.data.status === 'stopped') {
+        toast({
+          title: "Generation Stopped",
+          description: "The schedule generation was stopped. Please try again.",
+          variant: "destructive"
+        });
       } else {
-        throw new Error('No output data received from API');
+        throw new Error('Unexpected response status from API');
       }
     } catch (error) {
       console.error('Error:', error);
