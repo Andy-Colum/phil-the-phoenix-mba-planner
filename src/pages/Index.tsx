@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -19,6 +18,8 @@ import {
   Rocket,
   LineChart
 } from "lucide-react";
+import { Sheet } from "@/components/ui/sheet";
+import { MBAJourney } from "@/components/MBAJourney";
 
 const Index = () => {
   const { toast } = useToast();
@@ -31,6 +32,123 @@ const Index = () => {
   const [MBA_Focus_Area, setMBA_Focus_Area] = useState("");
   const [Professional_Goals, setProfessional_Goals] = useState("");
   const [Extracurricular_Interests, setExtracurricular_Interests] = useState("");
+
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  const defaultMBAData = {
+    Year_1: {
+      Autumn: {
+        Course_1: {
+          name: "Financial Accounting",
+          description: "Learn the fundamentals of financial accounting and reporting."
+        },
+        Course_2: {
+          name: "Microeconomics",
+          description: "Study principles of microeconomics and market behavior."
+        },
+        Course_3: {
+          name: "Leadership Development",
+          description: "Develop essential leadership and management skills."
+        },
+        Club_Options: ["Finance Club", "Consulting Club"],
+        Events: ["Fall Career Fair", "Leadership Workshop"]
+      },
+      Winter: {
+        Course_1: {
+          name: "Marketing Strategy",
+          description: "Learn key marketing concepts and strategic planning."
+        },
+        Course_2: {
+          name: "Data Analytics",
+          description: "Master data analysis techniques and tools."
+        },
+        Course_3: {
+          name: "Operations Management",
+          description: "Study operations and supply chain management."
+        },
+        Club_Options: ["Marketing Club", "Tech Club"],
+        Events: ["Winter Networking Event", "Analytics Conference"]
+      },
+      Spring: {
+        Course_1: {
+          name: "Corporate Finance",
+          description: "Study corporate financial management and strategy."
+        },
+        Course_2: {
+          name: "Strategic Management",
+          description: "Learn strategic planning and execution."
+        },
+        Course_3: {
+          name: "Business Analytics",
+          description: "Advanced business analytics applications."
+        },
+        Club_Options: ["Investment Club", "Strategy Club"],
+        Events: ["Spring Career Fair", "Strategy Summit"]
+      },
+      Summer: {
+        Internship: {
+          name: "Summer Internship Program",
+          description: "Gain hands-on experience in your chosen field."
+        }
+      }
+    },
+    Year_2: {
+      Autumn: {
+        Course_1: {
+          name: "Advanced Finance",
+          description: "Deep dive into advanced financial concepts."
+        },
+        Course_2: {
+          name: "Entrepreneurship",
+          description: "Learn startup fundamentals and venture creation."
+        },
+        Course_3: {
+          name: "Global Business",
+          description: "Study international business strategies."
+        },
+        Club_Options: ["Entrepreneurship Club", "Global Business Club"],
+        Events: ["Startup Competition", "Global Business Forum"]
+      },
+      Winter: {
+        Course_1: {
+          name: "Digital Innovation",
+          description: "Explore digital transformation strategies."
+        },
+        Course_2: {
+          name: "Negotiation",
+          description: "Master negotiation techniques and strategies."
+        },
+        Course_3: {
+          name: "Risk Management",
+          description: "Study risk assessment and management."
+        },
+        Club_Options: ["Innovation Club", "Leadership Club"],
+        Events: ["Innovation Summit", "Leadership Conference"]
+      },
+      Spring: {
+        Course_1: {
+          name: "Business Ethics",
+          description: "Study ethical decision-making in business."
+        },
+        Course_2: {
+          name: "Strategic Leadership",
+          description: "Advanced leadership development."
+        },
+        Course_3: {
+          name: "Capstone Project",
+          description: "Apply MBA knowledge to real-world projects."
+        },
+        Club_Options: ["Ethics Club", "Alumni Network"],
+        Events: ["Graduation Ceremony", "Final Presentation"]
+      },
+      Summer: {
+        Internship: {
+          name: "Career Transition",
+          description: "Prepare for post-MBA career opportunities."
+        }
+      }
+    }
+  };
 
   const handleStartChat = () => {
     setChatStarted(true);
@@ -109,10 +227,7 @@ const Index = () => {
       return;
     }
 
-    toast({
-      title: "Success",
-      description: "Your request has been submitted successfully!",
-    });
+    setIsSheetOpen(true);
   };
 
   return (
@@ -337,9 +452,14 @@ const Index = () => {
           </Card>
         </div>
       </div>
+
+      <MBAJourney 
+        isOpen={isSheetOpen}
+        onOpenChange={setIsSheetOpen}
+        schedule={defaultMBAData}
+      />
     </div>
   );
 };
 
 export default Index;
-
