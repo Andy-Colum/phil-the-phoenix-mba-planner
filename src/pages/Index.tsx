@@ -149,20 +149,25 @@ const Index = () => {
     setIsGenerating(true);
 
     try {
-      const { data: { value: workflowApiKey }, error: workflowKeyError } = await supabase
+      const { data: workflowKey, error: workflowKeyError } = await supabase
         .from('secrets')
         .select('value')
         .eq('name', 'DIFY_WORKFLOW_API_KEY')
         .single();
 
-      if (workflowKeyError || !workflowApiKey) {
-        throw new Error('Unable to access API key');
+      if (workflowKeyError) {
+        console.error('Error fetching workflow API key:', workflowKeyError);
+        throw new Error('Unable to access workflow API key');
+      }
+
+      if (!workflowKey?.value) {
+        throw new Error('Workflow API key not found');
       }
 
       const response = await fetch('https://api.dify.ai/v1/workflows/run', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${workflowApiKey}`,
+          'Authorization': `Bearer ${workflowKey.value}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -379,20 +384,25 @@ const Index = () => {
     setIsLoading(true);
     
     try {
-      const { data: { value: chatApiKey }, error: chatKeyError } = await supabase
+      const { data: chatKey, error: chatKeyError } = await supabase
         .from('secrets')
         .select('value')
         .eq('name', 'DIFY_CHAT_API_KEY')
         .single();
 
-      if (chatKeyError || !chatApiKey) {
-        throw new Error('Unable to access API key');
+      if (chatKeyError) {
+        console.error('Error fetching chat API key:', chatKeyError);
+        throw new Error('Unable to access chat API key');
+      }
+
+      if (!chatKey?.value) {
+        throw new Error('Chat API key not found');
       }
 
       const response = await fetch('https://api.dify.ai/v1/chat-messages', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${chatApiKey}`,
+          'Authorization': `Bearer ${chatKey.value}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
