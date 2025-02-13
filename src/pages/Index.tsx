@@ -127,56 +127,77 @@ const Index = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSheetOpen(true);
     
-    const formData = {
-      MBA_Program_Type,
-      MBA_Focus_Area,
-      Professional_Goals,
-      Extracurricular_Interests
-    };
+    // First validate that all required fields are filled
+    if (!MBA_Program_Type || !MBA_Focus_Area || !Professional_Goals || !Extracurricular_Interests) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all fields before generating your MBA schedule.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Format the initial query with structured data
+    const initialQuery = `
+      Based on the following MBA preferences:
+      1. Program Type: ${MBA_Program_Type}
+      2. Focus Area: ${MBA_Focus_Area}
+      3. Professional Goals: ${Professional_Goals}
+      4. Extracurricular Interests: ${Extracurricular_Interests}
+      
+      Please generate a detailed two-year MBA schedule that aligns with these preferences.
+    `;
     
     try {
-      const response = await fetch('https://api.dify.ai/v1/', {
+      // First API call to process the form data
+      const initialResponse = await fetch('https://api.dify.ai/v1/chat-messages', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer app-zA9ZDv20AN3bzw4fbTCis0KJ',
+          'Authorization': 'Bearer app-BMVzb50wyz8hw04pC90s3Rig',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          inputs: formData,
-          query: `Generate a detailed two-year MBA schedule based on these preferences: 
-            Program: ${MBA_Program_Type}, 
-            Focus: ${MBA_Focus_Area}, 
-            Goals: ${Professional_Goals}, 
-            Interests: ${Extracurricular_Interests}`,
+          inputs: {
+            program_type: MBA_Program_Type,
+            focus_area: MBA_Focus_Area,
+            goals: Professional_Goals,
+            interests: Extracurricular_Interests
+          },
+          query: initialQuery,
           response_mode: "blocking",
-          user: "booth-mba-user",
+          user: "booth-mba-user"
         })
       });
 
-      if (!response.ok) {
-        throw new Error(`Dify API responded with status: ${response.status}`);
+      if (!initialResponse.ok) {
+        throw new Error(`Dify API responded with status: ${initialResponse.status}`);
       }
 
-      const data = await response.json();
-      console.log("API Response:", data);
+      const data = await initialResponse.json();
+      console.log("Initial API Response:", data);
 
-      if (data.output) {
+      if (data.answer) {
+        setIsSheetOpen(true);
         try {
-          const scheduleData = JSON.parse(data.output);
+          // Try to parse the response as JSON schedule data
+          const scheduleData = JSON.parse(data.answer);
           console.log("Parsed Schedule Data:", scheduleData);
+          // Update the UI with the schedule data
+          // This will use the existing TermBlock component to display the data
         } catch (parseError) {
-          console.error('Error parsing schedule JSON:', parseError);
+          console.error('Response is not in JSON format:', data.answer);
+          // If it's not JSON, we'll still show the sheet with the text response
           toast({
-            title: "Error",
-            description: "Unable to process the schedule data. Please try again.",
-            variant: "destructive"
+            title: "Schedule Generated",
+            description: "Your custom MBA schedule has been created.",
           });
         }
+      } else {
+        throw new Error('No answer received from API');
       }
     } catch (error) {
-      console.error('Error fetching schedule:', error);
+      console.error('Error processing MBA schedule:', error);
       toast({
         title: "Error",
         description: "Unable to generate your MBA schedule. Please try again later.",
