@@ -1,9 +1,11 @@
+
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { useToast } from "@/components/ui/use-toast";
 import { 
   GraduationCap, 
   Moon, 
@@ -22,6 +24,7 @@ import {
 } from "lucide-react";
 
 const Index = () => {
+  const { toast } = useToast();
   const [message, setMessage] = useState("");
   const [chatStarted, setChatStarted] = useState(false);
   const [programType, setProgramType] = useState("");
@@ -32,7 +35,6 @@ const Index = () => {
   const [chatMessage, setChatMessage] = useState("");
   const [chatHistory, setChatHistory] = useState<Array<{ role: 'user' | 'assistant', content: string }>>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [apiKey, setApiKey] = useState("");
 
   const handleStartChat = () => {
     setChatStarted(true);
@@ -66,18 +68,13 @@ const Index = () => {
     setIsLoading(true);
     
     try {
-      const response = await fetch('https://api.dify.ai/v1/chat-messages', {
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer app-BMVzb50wyz8hw04pC90s3Rig`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          inputs: {},
-          query: userMessage,
-          response_mode: "blocking",
-          conversation_id: "",
-          user: "booth-mba-user",
+          message: userMessage,
         })
       });
 
@@ -93,6 +90,11 @@ const Index = () => {
       }
     } catch (error) {
       console.error('Error sending message:', error);
+      toast({
+        title: "Error",
+        description: "Unable to connect to the chat service. Please try again later.",
+        variant: "destructive"
+      });
       setChatHistory(prev => [...prev, { 
         role: 'assistant', 
         content: "I apologize, but I'm having trouble connecting right now. Please try again later." 
