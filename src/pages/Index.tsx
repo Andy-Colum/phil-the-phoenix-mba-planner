@@ -48,20 +48,6 @@ const Index = () => {
     }]);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSheetOpen(true);
-    
-    const formData = {
-      MBA_Program_Type,
-      MBA_Focus_Area,
-      Professional_Goals,
-      Extracurricular_Interests
-    };
-    
-    console.log("Form Data:", formData);
-  };
-
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!chatMessage.trim()) return;
@@ -119,128 +105,75 @@ const Index = () => {
     }
   };
 
+  // Update the types to match the API response format
   type TermData = {
-    courses?: string[];
-    extracurriculars?: string[];
-    events?: string[];
-    internship?: string;
+    Courses?: string[];
+    Clubs?: string[];
+    Events?: string[];
+    Internship?: string;
+  };
+
+  type YearData = {
+    Autumn: TermData;
+    Winter: TermData;
+    Spring: TermData;
+    Summer: TermData;
   };
 
   type MBASchedule = {
-    year1: {
-      autumn: TermData;
-      winter: TermData;
-      spring: TermData;
-      summer: TermData;
-    };
-    year2: {
-      autumn: TermData;
-      winter: TermData;
-      spring: TermData;
-      summer: TermData;
-    };
+    Year_1: YearData;
+    Year_2: YearData;
   };
 
-  const sampleMBAData: MBASchedule = {
-    year1: {
-      autumn: {
-        courses: [
-          "Financial Accounting",
-          "Microeconomics",
-          "Leadership Development"
-        ],
-        extracurriculars: [
-          "Investment Banking Group",
-          "Consulting Club"
-        ],
-        events: [
-          "Fall Career Fair",
-          "Alumni Networking Night"
-        ]
-      },
-      winter: {
-        courses: [
-          "Corporate Finance",
-          "Marketing Strategy",
-          "Operations Management"
-        ],
-        extracurriculars: [
-          "Case Competition Club",
-          "Tech Group"
-        ],
-        events: [
-          "Winter Conference",
-          "Industry Speaker Series"
-        ]
-      },
-      spring: {
-        courses: [
-          "Managerial Accounting",
-          "Business Strategy",
-          "Data Analytics"
-        ],
-        extracurriculars: [
-          "Entrepreneurship Club",
-          "Social Impact Group"
-        ],
-        events: [
-          "Spring Networking Event",
-          "Startup Pitch Competition"
-        ]
-      },
-      summer: {
-        internship: "Summer Internship Program"
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSheetOpen(true);
+    
+    const formData = {
+      MBA_Program_Type,
+      MBA_Focus_Area,
+      Professional_Goals,
+      Extracurricular_Interests
+    };
+    
+    try {
+      const response = await fetch('https://api.dify.ai/v1/chat-messages', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer app-zA9ZDv20AN3bzw4fbTCis0KJ',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          inputs: formData,
+          query: `Generate a detailed two-year MBA schedule based on these preferences: 
+            Program: ${MBA_Program_Type}, 
+            Focus: ${MBA_Focus_Area}, 
+            Goals: ${Professional_Goals}, 
+            Interests: ${Extracurricular_Interests}`,
+          response_mode: "blocking",
+          conversation_id: "",
+          user: "booth-mba-user",
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Dify API responded with status: ${response.status}`);
       }
-    },
-    year2: {
-      autumn: {
-        courses: [
-          "Advanced Finance",
-          "Strategic Leadership",
-          "Global Markets"
-        ],
-        extracurriculars: [
-          "Finance Club Leadership",
-          "Mentor Program"
-        ],
-        events: [
-          "Leadership Summit",
-          "Career Trek"
-        ]
-      },
-      winter: {
-        courses: [
-          "Negotiation",
-          "Innovation Strategy",
-          "Business Analytics"
-        ],
-        extracurriculars: [
-          "Venture Capital Club",
-          "Data Analytics Group"
-        ],
-        events: [
-          "Winter Networking Event",
-          "Industry Panel"
-        ]
-      },
-      spring: {
-        courses: [
-          "International Business",
-          "Entrepreneurial Finance",
-          "Digital Strategy"
-        ],
-        extracurriculars: [
-          "Graduation Committee",
-          "Alumni Network"
-        ],
-        events: [
-          "Graduation Gala",
-          "Final Presentation"
-        ]
-      },
-      summer: {
-        internship: "Post-MBA Career Transition"
+
+      const data = await response.json();
+      console.log("API Response:", data);
+
+      if (data.answer) {
+        // Here we'll need to parse the response - for now using sample data
+        console.log("LLM Response:", data.answer);
       }
+    } catch (error) {
+      console.error('Error fetching schedule:', error);
+      toast({
+        title: "Error",
+        description: "Unable to generate your MBA schedule. Please try again later.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -254,11 +187,11 @@ const Index = () => {
           </div>
         </CollapsibleTrigger>
         <CollapsibleContent className="p-4 space-y-4 bg-gray-50 rounded-lg mt-2">
-          {data.courses ? (
+          {data.Courses ? (
             <div>
               <h5 className="font-medium text-sm text-gray-700 mb-2">Courses</h5>
               <ul className="space-y-2">
-                {data.courses.map((course, idx) => (
+                {data.Courses.map((course, idx) => (
                   <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
                     <BookOpen className="h-4 w-4" />
                     {course}
@@ -268,25 +201,25 @@ const Index = () => {
             </div>
           ) : null}
           
-          {data.extracurriculars ? (
+          {data.Clubs ? (
             <div>
-              <h5 className="font-medium text-sm text-gray-700 mb-2">Extracurricular Activities</h5>
+              <h5 className="font-medium text-sm text-gray-700 mb-2">Clubs</h5>
               <ul className="space-y-2">
-                {data.extracurriculars.map((activity, idx) => (
+                {data.Clubs.map((club, idx) => (
                   <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
                     <Users className="h-4 w-4" />
-                    {activity}
+                    {club}
                   </li>
                 ))}
               </ul>
             </div>
           ) : null}
           
-          {data.events ? (
+          {data.Events ? (
             <div>
-              <h5 className="font-medium text-sm text-gray-700 mb-2">Events & Networking</h5>
+              <h5 className="font-medium text-sm text-gray-700 mb-2">Events</h5>
               <ul className="space-y-2">
-                {data.events.map((event, idx) => (
+                {data.Events.map((event, idx) => (
                   <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
                     {event}
@@ -296,18 +229,121 @@ const Index = () => {
             </div>
           ) : null}
           
-          {data.internship && (
+          {data.Internship && (
             <div>
               <h5 className="font-medium text-sm text-gray-700 mb-2">Internship</h5>
               <p className="text-sm text-gray-600 flex items-center gap-2">
                 <Briefcase className="h-4 w-4" />
-                {data.internship}
+                {data.Internship}
               </p>
             </div>
           )}
         </CollapsibleContent>
       </Collapsible>
     );
+  };
+
+  const sampleMBAData: MBASchedule = {
+    Year_1: {
+      Autumn: {
+        Courses: [
+          "Financial Accounting",
+          "Microeconomics",
+          "Leadership Development"
+        ],
+        Clubs: [
+          "Investment Banking Group",
+          "Consulting Club"
+        ],
+        Events: [
+          "Fall Career Fair",
+          "Alumni Networking Night"
+        ]
+      },
+      Winter: {
+        Courses: [
+          "Corporate Finance",
+          "Marketing Strategy",
+          "Operations Management"
+        ],
+        Clubs: [
+          "Case Competition Club",
+          "Tech Group"
+        ],
+        Events: [
+          "Winter Conference",
+          "Industry Speaker Series"
+        ]
+      },
+      Spring: {
+        Courses: [
+          "Managerial Accounting",
+          "Business Strategy",
+          "Data Analytics"
+        ],
+        Clubs: [
+          "Entrepreneurship Club",
+          "Social Impact Group"
+        ],
+        Events: [
+          "Spring Networking Event",
+          "Startup Pitch Competition"
+        ]
+      },
+      Summer: {
+        Internship: "Summer Internship Program"
+      }
+    },
+    Year_2: {
+      Autumn: {
+        Courses: [
+          "Advanced Finance",
+          "Strategic Leadership",
+          "Global Markets"
+        ],
+        Clubs: [
+          "Finance Club Leadership",
+          "Mentor Program"
+        ],
+        Events: [
+          "Leadership Summit",
+          "Career Trek"
+        ]
+      },
+      Winter: {
+        Courses: [
+          "Negotiation",
+          "Innovation Strategy",
+          "Business Analytics"
+        ],
+        Clubs: [
+          "Venture Capital Club",
+          "Data Analytics Group"
+        ],
+        Events: [
+          "Winter Networking Event",
+          "Industry Panel"
+        ]
+      },
+      Spring: {
+        Courses: [
+          "International Business",
+          "Entrepreneurial Finance",
+          "Digital Strategy"
+        ],
+        Clubs: [
+          "Graduation Committee",
+          "Alumni Network"
+        ],
+        Events: [
+          "Graduation Gala",
+          "Final Presentation"
+        ]
+      },
+      Summer: {
+        Internship: "Post-MBA Career Transition"
+      }
+    }
   };
 
   return (
@@ -549,10 +585,10 @@ const Index = () => {
             <div>
               <h3 className="text-xl font-semibold mb-4">Year 1</h3>
               <div className="space-y-4">
-                <TermBlock data={sampleMBAData.year1.autumn} term="Autumn Quarter" />
-                <TermBlock data={sampleMBAData.year1.winter} term="Winter Quarter" />
-                <TermBlock data={sampleMBAData.year1.spring} term="Spring Quarter" />
-                <TermBlock data={sampleMBAData.year1.summer} term="Summer" />
+                <TermBlock data={sampleMBAData.Year_1.Autumn} term="Autumn Quarter" />
+                <TermBlock data={sampleMBAData.Year_1.Winter} term="Winter Quarter" />
+                <TermBlock data={sampleMBAData.Year_1.Spring} term="Spring Quarter" />
+                <TermBlock data={sampleMBAData.Year_1.Summer} term="Summer" />
               </div>
             </div>
 
@@ -561,10 +597,10 @@ const Index = () => {
             <div>
               <h3 className="text-xl font-semibold mb-4">Year 2</h3>
               <div className="space-y-4">
-                <TermBlock data={sampleMBAData.year2.autumn} term="Autumn Quarter" />
-                <TermBlock data={sampleMBAData.year2.winter} term="Winter Quarter" />
-                <TermBlock data={sampleMBAData.year2.spring} term="Spring Quarter" />
-                <TermBlock data={sampleMBAData.year2.summer} term="Summer" />
+                <TermBlock data={sampleMBAData.Year_2.Autumn} term="Autumn Quarter" />
+                <TermBlock data={sampleMBAData.Year_2.Winter} term="Winter Quarter" />
+                <TermBlock data={sampleMBAData.Year_2.Spring} term="Spring Quarter" />
+                <TermBlock data={sampleMBAData.Year_2.Summer} term="Summer" />
               </div>
             </div>
 
