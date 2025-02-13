@@ -48,20 +48,6 @@ const Index = () => {
     }]);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSheetOpen(true);
-    
-    const formData = {
-      MBA_Program_Type,
-      MBA_Focus_Area,
-      Professional_Goals,
-      Extracurricular_Interests
-    };
-    
-    console.log("Form Data:", formData);
-  };
-
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!chatMessage.trim()) return;
@@ -119,132 +105,292 @@ const Index = () => {
     }
   };
 
+  type CourseData = {
+    name: string;
+    description: string;
+  };
+
   type TermData = {
-    courses?: string[];
-    extracurriculars?: string[];
-    events?: string[];
-    internship?: string;
+    Course_1: CourseData;
+    Course_2: CourseData;
+    Course_3: CourseData;
+    Club_Options: string[];
+    Events: string[];
+  };
+
+  type SummerData = {
+    Internship: {
+      name: string;
+      description: string;
+    };
+  };
+
+  type YearData = {
+    Autumn: TermData;
+    Winter: TermData;
+    Spring: TermData;
+    Summer: SummerData;
   };
 
   type MBASchedule = {
-    year1: {
-      autumn: TermData;
-      winter: TermData;
-      spring: TermData;
-      summer: TermData;
-    };
-    year2: {
-      autumn: TermData;
-      winter: TermData;
-      spring: TermData;
-      summer: TermData;
-    };
+    Year_1: YearData;
+    Year_2: YearData;
   };
 
-  const sampleMBAData: MBASchedule = {
-    year1: {
-      autumn: {
-        courses: [
-          "Financial Accounting",
-          "Microeconomics",
-          "Leadership Development"
-        ],
-        extracurriculars: [
+  const [sampleMBAData, setSampleMBAData] = useState<MBASchedule>({
+    Year_1: {
+      Autumn: {
+        Course_1: {
+          name: "Financial Accounting",
+          description: "Learn the fundamentals of financial accounting."
+        },
+        Course_2: {
+          name: "Microeconomics",
+          description: "Explore the principles of microeconomics."
+        },
+        Course_3: {
+          name: "Leadership Development",
+          description: "Develop essential leadership skills."
+        },
+        Club_Options: [
           "Investment Banking Group",
           "Consulting Club"
         ],
-        events: [
+        Events: [
           "Fall Career Fair",
           "Alumni Networking Night"
         ]
       },
-      winter: {
-        courses: [
-          "Corporate Finance",
-          "Marketing Strategy",
-          "Operations Management"
-        ],
-        extracurriculars: [
+      Winter: {
+        Course_1: {
+          name: "Corporate Finance",
+          description: "Study corporate finance and investment strategies."
+        },
+        Course_2: {
+          name: "Marketing Strategy",
+          description: "Develop marketing strategies and tactics."
+        },
+        Course_3: {
+          name: "Operations Management",
+          description: "Learn about operations management and supply chain."
+        },
+        Club_Options: [
           "Case Competition Club",
           "Tech Group"
         ],
-        events: [
+        Events: [
           "Winter Conference",
           "Industry Speaker Series"
         ]
       },
-      spring: {
-        courses: [
-          "Managerial Accounting",
-          "Business Strategy",
-          "Data Analytics"
-        ],
-        extracurriculars: [
+      Spring: {
+        Course_1: {
+          name: "Managerial Accounting",
+          description: "Gain a deeper understanding of managerial accounting."
+        },
+        Course_2: {
+          name: "Business Strategy",
+          description: "Develop strategic business planning skills."
+        },
+        Course_3: {
+          name: "Data Analytics",
+          description: "Learn data analytics and its applications."
+        },
+        Club_Options: [
           "Entrepreneurship Club",
           "Social Impact Group"
         ],
-        events: [
+        Events: [
           "Spring Networking Event",
           "Startup Pitch Competition"
         ]
       },
-      summer: {
-        internship: "Summer Internship Program"
+      Summer: {
+        Internship: {
+          name: "Summer Internship Program",
+          description: "Gain hands-on experience in a real-world setting."
+        }
       }
     },
-    year2: {
-      autumn: {
-        courses: [
-          "Advanced Finance",
-          "Strategic Leadership",
-          "Global Markets"
-        ],
-        extracurriculars: [
+    Year_2: {
+      Autumn: {
+        Course_1: {
+          name: "Advanced Finance",
+          description: "Study advanced financial concepts and models."
+        },
+        Course_2: {
+          name: "Strategic Leadership",
+          description: "Develop strategic leadership skills."
+        },
+        Course_3: {
+          name: "Global Markets",
+          description: "Explore global markets and international finance."
+        },
+        Club_Options: [
           "Finance Club Leadership",
           "Mentor Program"
         ],
-        events: [
+        Events: [
           "Leadership Summit",
           "Career Trek"
         ]
       },
-      winter: {
-        courses: [
-          "Negotiation",
-          "Innovation Strategy",
-          "Business Analytics"
-        ],
-        extracurriculars: [
+      Winter: {
+        Course_1: {
+          name: "Negotiation",
+          description: "Learn the art of negotiation and conflict resolution."
+        },
+        Course_2: {
+          name: "Innovation Strategy",
+          description: "Develop innovative strategies and approaches."
+        },
+        Course_3: {
+          name: "Business Analytics",
+          description: "Learn business analytics and its applications."
+        },
+        Club_Options: [
           "Venture Capital Club",
           "Data Analytics Group"
         ],
-        events: [
+        Events: [
           "Winter Networking Event",
           "Industry Panel"
         ]
       },
-      spring: {
-        courses: [
-          "International Business",
-          "Entrepreneurial Finance",
-          "Digital Strategy"
-        ],
-        extracurriculars: [
+      Spring: {
+        Course_1: {
+          name: "International Business",
+          description: "Study international business and global markets."
+        },
+        Course_2: {
+          name: "Entrepreneurial Finance",
+          description: "Learn about entrepreneurial finance and venture capital."
+        },
+        Course_3: {
+          name: "Digital Strategy",
+          description: "Develop digital strategy and innovation."
+        },
+        Club_Options: [
           "Graduation Committee",
           "Alumni Network"
         ],
-        events: [
+        Events: [
           "Graduation Gala",
           "Final Presentation"
         ]
       },
-      summer: {
-        internship: "Post-MBA Career Transition"
+      Summer: {
+        Internship: {
+          name: "Post-MBA Career Transition",
+          description: "Prepare for your post-MBA career transition."
+        }
       }
+    }
+  });
+
+  interface DifyResponse {
+    workflow_run_id: string;
+    task_id: string;
+    data: {
+      id: string;
+      workflow_id: string;
+      status: 'running' | 'succeeded' | 'failed' | 'stopped';
+      outputs?: MBASchedule;
+      error?: string;
+      elapsed_time?: number;
+      total_tokens?: number;
+      total_steps?: number;
+      created_at: string;
+      finished_at?: string;
+    };
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!MBA_Program_Type || !MBA_Focus_Area || !Professional_Goals || !Extracurricular_Interests) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all fields before generating your MBA schedule.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const API_KEY = 'app-zA9ZDv20AN3bzw4fbTCis0KJ';
+      const BASE_URL = 'https://api.dify.ai/v1';
+
+      const runResponse = await fetch(`${BASE_URL}/workflows/run`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          inputs: {
+            "MBA_Program_Type": MBA_Program_Type,
+            "MBA_Focus_Area": MBA_Focus_Area,
+            "Professional_Goals": Professional_Goals,
+            "Extracurricular_Interests": Extracurricular_Interests
+          },
+          response_mode: "blocking",
+          user: "booth-mba-user"
+        })
+      });
+
+      if (!runResponse.ok) {
+        const errorData = await runResponse.json();
+        console.error('API Error:', errorData);
+        throw new Error(`API responded with status: ${runResponse.status}, message: ${errorData.message}`);
+      }
+
+      const difyResponse: DifyResponse = await runResponse.json();
+      console.log("Dify API Response:", difyResponse);
+
+      if (difyResponse.data.status === 'succeeded' && difyResponse.data.outputs) {
+        try {
+          const scheduleData: MBASchedule = difyResponse.data.outputs;
+          console.log("Schedule Data:", scheduleData);
+          setSampleMBAData(scheduleData);
+          setIsSheetOpen(true);
+          
+          toast({
+            title: "Success",
+            description: `Your MBA schedule has been generated in ${difyResponse.data.elapsed_time?.toFixed(2) || 0} seconds!`,
+          });
+        } catch (parseError) {
+          console.error('Error processing schedule data:', parseError);
+          toast({
+            title: "Error",
+            description: "Unable to process the schedule data. Please try again.",
+            variant: "destructive"
+          });
+        }
+      } else if (difyResponse.data.status === 'failed') {
+        throw new Error(difyResponse.data.error || 'Failed to generate MBA schedule');
+      } else if (difyResponse.data.status === 'stopped') {
+        toast({
+          title: "Generation Stopped",
+          description: "The schedule generation was stopped. Please try again.",
+          variant: "destructive"
+        });
+      } else {
+        throw new Error('Unexpected response status from API');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: typeof error === 'string' ? error : "Unable to generate your MBA schedule. Please try again later.",
+        variant: "destructive"
+      });
     }
   };
 
-  const TermBlock = ({ data, term }: { data: TermData; term: string }) => {
+  const TermBlock = ({ data, term }: { data: TermData | SummerData; term: string }) => {
+    const isSummer = term === "Summer";
+    
     return (
       <Collapsible className="w-full">
         <CollapsibleTrigger className="w-full">
@@ -254,55 +400,60 @@ const Index = () => {
           </div>
         </CollapsibleTrigger>
         <CollapsibleContent className="p-4 space-y-4 bg-gray-50 rounded-lg mt-2">
-          {data.courses ? (
-            <div>
-              <h5 className="font-medium text-sm text-gray-700 mb-2">Courses</h5>
-              <ul className="space-y-2">
-                {data.courses.map((course, idx) => (
-                  <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
-                    <BookOpen className="h-4 w-4" />
-                    {course}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-          
-          {data.extracurriculars ? (
-            <div>
-              <h5 className="font-medium text-sm text-gray-700 mb-2">Extracurricular Activities</h5>
-              <ul className="space-y-2">
-                {data.extracurriculars.map((activity, idx) => (
-                  <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
-                    <Users className="h-4 w-4" />
-                    {activity}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-          
-          {data.events ? (
-            <div>
-              <h5 className="font-medium text-sm text-gray-700 mb-2">Events & Networking</h5>
-              <ul className="space-y-2">
-                {data.events.map((event, idx) => (
-                  <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
-                    <Calendar className="h-4 w-4" />
-                    {event}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-          
-          {data.internship && (
+          {!isSummer ? (
+            <>
+              <div>
+                <h5 className="font-medium text-sm text-gray-700 mb-2">Courses</h5>
+                <div className="space-y-3">
+                  {(['Course_1', 'Course_2', 'Course_3'] as const).map((courseKey) => {
+                    const course = (data as TermData)[courseKey];
+                    return (
+                      <div key={courseKey} className="bg-white p-3 rounded-lg shadow-sm">
+                        <div className="flex items-center gap-2">
+                          <BookOpen className="h-4 w-4 text-[#ea384c]" />
+                          <h6 className="font-medium">{course.name}</h6>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-1 ml-6">{course.description}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              <div>
+                <h5 className="font-medium text-sm text-gray-700 mb-2">Clubs</h5>
+                <ul className="space-y-2">
+                  {(data as TermData).Club_Options.map((club, idx) => (
+                    <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
+                      <Users className="h-4 w-4" />
+                      {club}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h5 className="font-medium text-sm text-gray-700 mb-2">Events</h5>
+                <ul className="space-y-2">
+                  {(data as TermData).Events.map((event, idx) => (
+                    <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      {event}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </>
+          ) : (
             <div>
               <h5 className="font-medium text-sm text-gray-700 mb-2">Internship</h5>
-              <p className="text-sm text-gray-600 flex items-center gap-2">
-                <Briefcase className="h-4 w-4" />
-                {data.internship}
-              </p>
+              <div className="bg-white p-3 rounded-lg shadow-sm">
+                <div className="flex items-center gap-2">
+                  <Briefcase className="h-4 w-4 text-[#ea384c]" />
+                  <h6 className="font-medium">{(data as SummerData).Internship.name}</h6>
+                </div>
+                <p className="text-sm text-gray-600 mt-1 ml-6">
+                  {(data as SummerData).Internship.description}
+                </p>
+              </div>
             </div>
           )}
         </CollapsibleContent>
@@ -480,7 +631,7 @@ const Index = () => {
                       </SelectItem>
                       <SelectItem value="Data_Analytics_Tech">
                         <span className="flex items-center gap-2">
-                          <Laptop className="h-4 w-4" />
+                          <Database className="h-4 w-4" />
                           Data Analytics & Tech
                         </span>
                       </SelectItem>
@@ -503,7 +654,7 @@ const Index = () => {
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Step 3: Professional Goals</label>
                   <Input
-                    placeholder="What do you hope to achieve with your MBA?"
+                    placeholder="What are your career aspirations and professional objectives?"
                     value={Professional_Goals}
                     onChange={(e) => setProfessional_Goals(e.target.value)}
                     className="w-full"
@@ -524,7 +675,7 @@ const Index = () => {
                   type="submit"
                   className="w-full bg-[#ea384c] hover:bg-[#d42d3d] text-white font-semibold"
                 >
-                  Start Your Journey
+                  Generate Your MBA Journey
                   <ArrowRight className="h-5 w-5 ml-2" />
                 </Button>
               </form>
@@ -549,10 +700,10 @@ const Index = () => {
             <div>
               <h3 className="text-xl font-semibold mb-4">Year 1</h3>
               <div className="space-y-4">
-                <TermBlock data={sampleMBAData.year1.autumn} term="Autumn Quarter" />
-                <TermBlock data={sampleMBAData.year1.winter} term="Winter Quarter" />
-                <TermBlock data={sampleMBAData.year1.spring} term="Spring Quarter" />
-                <TermBlock data={sampleMBAData.year1.summer} term="Summer" />
+                <TermBlock data={sampleMBAData.Year_1.Autumn} term="Autumn Quarter" />
+                <TermBlock data={sampleMBAData.Year_1.Winter} term="Winter Quarter" />
+                <TermBlock data={sampleMBAData.Year_1.Spring} term="Spring Quarter" />
+                <TermBlock data={sampleMBAData.Year_1.Summer} term="Summer" />
               </div>
             </div>
 
@@ -561,10 +712,10 @@ const Index = () => {
             <div>
               <h3 className="text-xl font-semibold mb-4">Year 2</h3>
               <div className="space-y-4">
-                <TermBlock data={sampleMBAData.year2.autumn} term="Autumn Quarter" />
-                <TermBlock data={sampleMBAData.year2.winter} term="Winter Quarter" />
-                <TermBlock data={sampleMBAData.year2.spring} term="Spring Quarter" />
-                <TermBlock data={sampleMBAData.year2.summer} term="Summer" />
+                <TermBlock data={sampleMBAData.Year_2.Autumn} term="Autumn Quarter" />
+                <TermBlock data={sampleMBAData.Year_2.Winter} term="Winter Quarter" />
+                <TermBlock data={sampleMBAData.Year_2.Spring} term="Spring Quarter" />
+                <TermBlock data={sampleMBAData.Year_2.Summer} term="Summer" />
               </div>
             </div>
 
