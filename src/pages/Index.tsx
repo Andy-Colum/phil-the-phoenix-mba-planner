@@ -3,119 +3,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useToast } from "@/components/ui/use-toast";
-import { 
-  GraduationCap, 
-  Moon, 
-  Sun, 
-  Briefcase,
-  ChartBar,
-  Rocket,
-  Target,
-  Database,
-  Globe,
-  MessageSquare,
-  ArrowRight,
-  Users,
-  Building,
-  Calendar,
-  BookOpen,
-  Laptop,
-  LineChart,
-  Loader,
-  Download
-} from "lucide-react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Separator } from "@/components/ui/separator";
+import { supabase } from "@/lib/supabase";
+import { GraduationCap, Moon, Sun, Briefcase, MessageSquare, ArrowRight } from "lucide-react";
 import { jsPDF } from "jspdf";
-
-type CourseData = {
-  name: string;
-  description: string;
-};
-
-type TermData = {
-  Course_1: CourseData;
-  Course_2: CourseData;
-  Course_3: CourseData;
-  Club_Options: string[];
-  Events: string[];
-};
-
-type SummerData = {
-  Internship: {
-    name: string;
-    description: string;
-  };
-};
-
-type YearData = {
-  Autumn: TermData;
-  Winter: TermData;
-  Spring: TermData;
-  Summer: SummerData;
-};
-
-type MBASchedule = {
-  Year_1: YearData;
-  Year_2: YearData;
-};
-
-const defaultMBASchedule: MBASchedule = {
-  Year_1: {
-    Autumn: {
-      Course_1: { name: "", description: "" },
-      Course_2: { name: "", description: "" },
-      Course_3: { name: "", description: "" },
-      Club_Options: [],
-      Events: []
-    },
-    Winter: {
-      Course_1: { name: "", description: "" },
-      Course_2: { name: "", description: "" },
-      Course_3: { name: "", description: "" },
-      Club_Options: [],
-      Events: []
-    },
-    Spring: {
-      Course_1: { name: "", description: "" },
-      Course_2: { name: "", description: "" },
-      Course_3: { name: "", description: "" },
-      Club_Options: [],
-      Events: []
-    },
-    Summer: {
-      Internship: { name: "", description: "" }
-    }
-  },
-  Year_2: {
-    Autumn: {
-      Course_1: { name: "", description: "" },
-      Course_2: { name: "", description: "" },
-      Course_3: { name: "", description: "" },
-      Club_Options: [],
-      Events: []
-    },
-    Winter: {
-      Course_1: { name: "", description: "" },
-      Course_2: { name: "", description: "" },
-      Course_3: { name: "", description: "" },
-      Club_Options: [],
-      Events: []
-    },
-    Spring: {
-      Course_1: { name: "", description: "" },
-      Course_2: { name: "", description: "" },
-      Course_3: { name: "", description: "" },
-      Club_Options: [],
-      Events: []
-    },
-    Summer: {
-      Internship: { name: "", description: "" }
-    }
-  }
-};
+import { TermBlock } from "@/components/TermBlock";
+import { MBASchedule, defaultMBASchedule, YearData } from "@/types/mba";
 
 const Index = () => {
   const { toast } = useToast();
@@ -795,41 +689,31 @@ const Index = () => {
       </div>
 
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent 
-          side="bottom" 
-          className="w-[90%] sm:w-[540px] h-[80vh] fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg overflow-y-auto"
-        >
-          <SheetHeader className="flex justify-between items-center">
-            <SheetTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              Your Two-Year MBA Journey at Booth
-            </SheetTitle>
-            <Button
-              onClick={handleDownload}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <Download className="h-4 w-4" />
-              Download Schedule
-            </Button>
+        <SheetContent className="w-full sm:max-w-3xl overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>Your Personalized MBA Schedule</SheetTitle>
           </SheetHeader>
-          
-          <div className="mt-6 space-y-8">
+          <div className="mt-6 space-y-6">
+            <Button onClick={handleDownload} className="w-full">
+              Download Schedule as PDF
+            </Button>
+            
             <div>
-              <h3 className="text-xl font-semibold mb-4">Year 1</h3>
+              <h3 className="text-lg font-semibold mb-4">Year 1</h3>
               <div className="space-y-4">
-                <TermBlock data={sampleMBAData.Year_1.Autumn} term="Autumn Quarter" />
-                <TermBlock data={sampleMBAData.Year_1.Winter} term="Winter Quarter" />
-                <TermBlock data={sampleMBAData.Year_1.Spring} term="Spring Quarter" />
+                <TermBlock data={sampleMBAData.Year_1.Autumn} term="Autumn" />
+                <TermBlock data={sampleMBAData.Year_1.Winter} term="Winter" />
+                <TermBlock data={sampleMBAData.Year_1.Spring} term="Spring" />
                 <TermBlock data={sampleMBAData.Year_1.Summer} term="Summer" />
               </div>
             </div>
+            
             <div>
-              <h3 className="text-xl font-semibold mb-4">Year 2</h3>
+              <h3 className="text-lg font-semibold mb-4">Year 2</h3>
               <div className="space-y-4">
-                <TermBlock data={sampleMBAData.Year_2.Autumn} term="Autumn Quarter" />
-                <TermBlock data={sampleMBAData.Year_2.Winter} term="Winter Quarter" />
-                <TermBlock data={sampleMBAData.Year_2.Spring} term="Spring Quarter" />
+                <TermBlock data={sampleMBAData.Year_2.Autumn} term="Autumn" />
+                <TermBlock data={sampleMBAData.Year_2.Winter} term="Winter" />
+                <TermBlock data={sampleMBAData.Year_2.Spring} term="Spring" />
                 <TermBlock data={sampleMBAData.Year_2.Summer} term="Summer" />
               </div>
             </div>

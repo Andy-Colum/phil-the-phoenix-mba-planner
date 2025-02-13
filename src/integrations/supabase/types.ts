@@ -24,6 +24,42 @@ export type Database = {
         }
         Relationships: []
       }
+      "public.secrets": {
+        Row: {
+          created_at: string
+          id: number
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+        }
+        Update: {
+          created_at?: string
+          id?: number
+        }
+        Relationships: []
+      }
+      secrets: {
+        Row: {
+          created_at: string
+          id: number
+          name: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          name: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          name?: string
+          value?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
