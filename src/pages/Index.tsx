@@ -231,7 +231,7 @@ const Index = () => {
     setIsGenerating(true);
 
     const requestBody = {
-      query: MBA_Program_Type, // This will be the main query parameter
+      query: MBA_Program_Type,
       inputs: {
         program_type: MBA_Program_Type,
         focus_area: MBA_Focus_Area,
@@ -245,10 +245,10 @@ const Index = () => {
     console.log('Request body being sent to API:', JSON.stringify(requestBody, null, 2));
 
     try {
-      const response = await fetch('https://api.dify.ai/v1/workflows/run', {
+      const response = await fetch('https://api.dify.ai/v1/chat-messages', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer app-zA9ZDv20AN3bzw4fbTCis0KJ',
+          'Authorization': 'Bearer app-BMVzb50wyz8hw04pC90s3Rig',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(requestBody)
@@ -263,43 +263,27 @@ const Index = () => {
       const data = await response.json();
       console.log('API Response:', JSON.stringify(data, null, 2));
       
-      if (data.data && data.data.outputs) {
-        try {
-          let schedule;
-          if (typeof data.data.outputs === 'string') {
-            schedule = JSON.parse(data.data.outputs);
-          } else if (data.data.outputs.text) {
-            schedule = JSON.parse(data.data.outputs.text);
-          } else {
-            throw new Error('Invalid response format');
-          }
-
-          setMBASchedule(schedule);
-          setIsSheetOpen(true);
-          toast({
-            title: "Success",
-            description: "Your personalized MBA journey has been generated!",
-          });
-        } catch (error) {
-          console.error('Error parsing schedule:', error);
-          toast({
-            title: "Error",
-            description: "Unable to process the generated schedule. Please try again.",
-            variant: "destructive"
-          });
-        }
+      if (data.answer) {
+        setChatHistory(prev => [...prev, { 
+          role: 'assistant', 
+          content: data.answer 
+        }]);
       } else {
-        throw new Error('Invalid API response format');
+        throw new Error('No answer received from API');
       }
     } catch (error) {
-      console.error('Error generating schedule:', error);
+      console.error('Error sending message:', error);
       toast({
         title: "Error",
-        description: "Unable to generate your MBA schedule. Please try again.",
+        description: "Unable to connect to the chat service. Please try again later.",
         variant: "destructive"
       });
+      setChatHistory(prev => [...prev, { 
+        role: 'assistant', 
+        content: "I apologize, but I'm having trouble connecting right now. Please try again later." 
+      }]);
     } finally {
-      setIsGenerating(false);
+      setIsLoading(false);
     }
   };
 
