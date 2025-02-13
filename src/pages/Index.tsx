@@ -230,6 +230,19 @@ const Index = () => {
 
     setIsGenerating(true);
 
+    const requestBody = {
+      inputs: {
+        MBA_Program_Type,
+        MBA_Focus_Area,
+        Professional_Goals,
+        Extracurricular_Interests
+      },
+      response_mode: "blocking",
+      user: "booth-mba-user"
+    };
+
+    console.log('Request body being sent to API:', JSON.stringify(requestBody, null, 2));
+
     try {
       const response = await fetch('https://api.dify.ai/v1/workflows/run', {
         method: 'POST',
@@ -237,23 +250,17 @@ const Index = () => {
           'Authorization': 'Bearer app-zA9ZDv20AN3bzw4fbTCis0KJ',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          inputs: {
-            MBA_Program_Type,
-            MBA_Focus_Area,
-            Professional_Goals,
-            Extracurricular_Interests
-          },
-          response_mode: "blocking",
-          user: "booth-mba-user"
-        })
+        body: JSON.stringify(requestBody)
       });
 
       if (!response.ok) {
+        const errorData = await response.text();
+        console.error('API Error Response:', errorData);
         throw new Error(`API responded with status: ${response.status}`);
       }
 
       const data = await response.json();
+      console.log('API Response:', JSON.stringify(data, null, 2));
       
       if (data.data && data.data.outputs) {
         try {
