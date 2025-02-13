@@ -708,27 +708,47 @@ const Index = () => {
           </SheetHeader>
           
           <div className="mt-6 space-y-8">
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Year 1</h3>
-              <div className="space-y-4">
-                <TermBlock data={sampleMBAData.Year_1.Autumn} term="Autumn Quarter" />
-                <TermBlock data={sampleMBAData.Year_1.Winter} term="Winter Quarter" />
-                <TermBlock data={sampleMBAData.Year_1.Spring} term="Spring Quarter" />
-                <TermBlock data={sampleMBAData.Year_1.Summer} term="Summer" />
+            {sampleMBAData?.Year_1 && (
+              <div>
+                <h3 className="text-xl font-semibold mb-4">Year 1</h3>
+                <div className="space-y-4">
+                  {sampleMBAData.Year_1.Autumn && (
+                    <TermBlock data={sampleMBAData.Year_1.Autumn} term="Autumn Quarter" />
+                  )}
+                  {sampleMBAData.Year_1.Winter && (
+                    <TermBlock data={sampleMBAData.Year_1.Winter} term="Winter Quarter" />
+                  )}
+                  {sampleMBAData.Year_1.Spring && (
+                    <TermBlock data={sampleMBAData.Year_1.Spring} term="Spring Quarter" />
+                  )}
+                  {sampleMBAData.Year_1.Summer && (
+                    <TermBlock data={sampleMBAData.Year_1.Summer} term="Summer" />
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
             <Separator className="my-6" />
 
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Year 2</h3>
-              <div className="space-y-4">
-                <TermBlock data={sampleMBAData.Year_2.Autumn} term="Autumn Quarter" />
-                <TermBlock data={sampleMBAData.Year_2.Winter} term="Winter Quarter" />
-                <TermBlock data={sampleMBAData.Year_2.Spring} term="Spring Quarter" />
-                <TermBlock data={sampleMBAData.Year_2.Summer} term="Summer" />
+            {sampleMBAData?.Year_2 && (
+              <div>
+                <h3 className="text-xl font-semibold mb-4">Year 2</h3>
+                <div className="space-y-4">
+                  {sampleMBAData.Year_2.Autumn && (
+                    <TermBlock data={sampleMBAData.Year_2.Autumn} term="Autumn Quarter" />
+                  )}
+                  {sampleMBAData.Year_2.Winter && (
+                    <TermBlock data={sampleMBAData.Year_2.Winter} term="Winter Quarter" />
+                  )}
+                  {sampleMBAData.Year_2.Spring && (
+                    <TermBlock data={sampleMBAData.Year_2.Spring} term="Spring Quarter" />
+                  )}
+                  {sampleMBAData.Year_2.Summer && (
+                    <TermBlock data={sampleMBAData.Year_2.Summer} term="Summer" />
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="mt-6 p-4 bg-gray-50 rounded-lg">
               <h4 className="font-medium mb-2">AI-Generated Insights</h4>
