@@ -167,7 +167,7 @@ const Index = () => {
       const response = await fetch('https://api.dify.ai/v1/workflows/run', {
         method: 'POST',
         headers: {
-          'Authorization': workflowKey.value,
+          'Authorization': `Bearer ${workflowKey.value}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -404,7 +404,7 @@ const Index = () => {
       const response = await fetch('https://api.dify.ai/v1/chat-messages', {
         method: 'POST',
         headers: {
-          'Authorization': chatKey.value,
+          'Authorization': `Bearer ${chatKey.value}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
