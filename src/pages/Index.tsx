@@ -1,3 +1,4 @@
+<lov-code>
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,7 @@ const Index = () => {
   const [MBA_Focus_Area, setMBA_Focus_Area] = useState("");
   const [Professional_Goals, setProfessional_Goals] = useState("");
   const [Extracurricular_Interests, setExtracurricular_Interests] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const handleStartChat = () => {
     setChatStarted(true);
@@ -305,6 +307,157 @@ const Index = () => {
     };
   }
 
+  const [MBASchedule, setMBASchedule] = useState<MBASchedule>({
+    Year_1: {
+      Autumn: {
+        Course_1: {
+          name: "Financial Accounting",
+          description: "Learn the fundamentals of financial accounting."
+        },
+        Course_2: {
+          name: "Microeconomics",
+          description: "Explore the principles of microeconomics."
+        },
+        Course_3: {
+          name: "Leadership Development",
+          description: "Develop essential leadership skills."
+        },
+        Club_Options: [
+          "Investment Banking Group",
+          "Consulting Club"
+        ],
+        Events: [
+          "Fall Career Fair",
+          "Alumni Networking Night"
+        ]
+      },
+      Winter: {
+        Course_1: {
+          name: "Corporate Finance",
+          description: "Study corporate finance and investment strategies."
+        },
+        Course_2: {
+          name: "Marketing Strategy",
+          description: "Develop marketing strategies and tactics."
+        },
+        Course_3: {
+          name: "Operations Management",
+          description: "Learn about operations management and supply chain."
+        },
+        Club_Options: [
+          "Case Competition Club",
+          "Tech Group"
+        ],
+        Events: [
+          "Winter Conference",
+          "Industry Speaker Series"
+        ]
+      },
+      Spring: {
+        Course_1: {
+          name: "Managerial Accounting",
+          description: "Gain a deeper understanding of managerial accounting."
+        },
+        Course_2: {
+          name: "Business Strategy",
+          description: "Develop strategic business planning skills."
+        },
+        Course_3: {
+          name: "Data Analytics",
+          description: "Learn data analytics and its applications."
+        },
+        Club_Options: [
+          "Entrepreneurship Club",
+          "Social Impact Group"
+        ],
+        Events: [
+          "Spring Networking Event",
+          "Startup Pitch Competition"
+        ]
+      },
+      Summer: {
+        Internship: {
+          name: "Summer Internship Program",
+          description: "Gain hands-on experience in a real-world setting."
+        }
+      }
+    },
+    Year_2: {
+      Autumn: {
+        Course_1: {
+          name: "Advanced Finance",
+          description: "Study advanced financial concepts and models."
+        },
+        Course_2: {
+          name: "Strategic Leadership",
+          description: "Develop strategic leadership skills."
+        },
+        Course_3: {
+          name: "Global Markets",
+          description: "Explore global markets and international finance."
+        },
+        Club_Options: [
+          "Finance Club Leadership",
+          "Mentor Program"
+        ],
+        Events: [
+          "Leadership Summit",
+          "Career Trek"
+        ]
+      },
+      Winter: {
+        Course_1: {
+          name: "Negotiation",
+          description: "Learn the art of negotiation and conflict resolution."
+        },
+        Course_2: {
+          name: "Innovation Strategy",
+          description: "Develop innovative strategies and approaches."
+        },
+        Course_3: {
+          name: "Business Analytics",
+          description: "Learn business analytics and its applications."
+        },
+        Club_Options: [
+          "Venture Capital Club",
+          "Data Analytics Group"
+        ],
+        Events: [
+          "Winter Networking Event",
+          "Industry Panel"
+        ]
+      },
+      Spring: {
+        Course_1: {
+          name: "International Business",
+          description: "Study international business and global markets."
+        },
+        Course_2: {
+          name: "Entrepreneurial Finance",
+          description: "Learn about entrepreneurial finance and venture capital."
+        },
+        Course_3: {
+          name: "Digital Strategy",
+          description: "Develop digital strategy and innovation."
+        },
+        Club_Options: [
+          "Graduation Committee",
+          "Alumni Network"
+        ],
+        Events: [
+          "Graduation Gala",
+          "Final Presentation"
+        ]
+      },
+      Summer: {
+        Internship: {
+          name: "Post-MBA Career Transition",
+          description: "Prepare for your post-MBA career transition."
+        }
+      }
+    }
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -317,74 +470,196 @@ const Index = () => {
       return;
     }
 
-    try {
-      const API_KEY = 'app-zA9ZDv20AN3bzw4fbTCis0KJ';
-      const BASE_URL = 'https://api.dify.ai/v1';
+    setIsGenerating(true);
 
-      const runResponse = await fetch(`${BASE_URL}/workflows/run`, {
+    try {
+      const response = await fetch('https://api.dify.ai/v1/workflows/run', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${API_KEY}`,
+          'Authorization': 'Bearer app-BMVzb50wyz8hw04pC90s3Rig',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           inputs: {
-            "MBA_Program_Type": MBA_Program_Type,
-            "MBA_Focus_Area": MBA_Focus_Area,
-            "Professional_Goals": Professional_Goals,
-            "Extracurricular_Interests": Extracurricular_Interests
+            MBA_Program_Type,
+            MBA_Focus_Area,
+            Professional_Goals,
+            Extracurricular_Interests
           },
           response_mode: "blocking",
           user: "booth-mba-user"
         })
       });
 
-      if (!runResponse.ok) {
-        const errorData = await runResponse.json();
-        console.error('API Error:', errorData);
-        throw new Error(`API responded with status: ${runResponse.status}, message: ${errorData.message}`);
+      if (!response.ok) {
+        throw new Error(`API responded with status: ${response.status}`);
       }
 
-      const difyResponse: DifyResponse = await runResponse.json();
-      console.log("Dify API Response:", difyResponse);
-
-      if (difyResponse.data.status === 'succeeded' && difyResponse.data.outputs) {
+      const data = await response.json();
+      console.log('API Response:', JSON.stringify(data, null, 2));
+      
+      if (data.data && data.data.status === 'succeeded' && data.data.outputs) {
         try {
-          const scheduleData: MBASchedule = difyResponse.data.outputs;
-          console.log("Schedule Data:", scheduleData);
-          setSampleMBAData(scheduleData);
+          let scheduleData;
+          const outputText = data.data.outputs.text;
+          
+          try {
+            // If the output is a JSON string, parse it
+            scheduleData = JSON.parse(outputText);
+          } catch (parseError) {
+            console.error('Error parsing schedule JSON:', parseError);
+            // If parsing fails, create a default schedule structure
+            scheduleData = {
+              Year_1: {
+                Autumn: {
+                  Course_1: { name: "Course Loading...", description: "Description loading..." },
+                  Course_2: { name: "Course Loading...", description: "Description loading..." },
+                  Course_3: { name: "Course Loading...", description: "Description loading..." },
+                  Club_Options: ["Loading clubs..."],
+                  Events: ["Loading events..."]
+                },
+                Winter: {
+                  Course_1: { name: "Course Loading...", description: "Description loading..." },
+                  Course_2: { name: "Course Loading...", description: "Description loading..." },
+                  Course_3: { name: "Course Loading...", description: "Description loading..." },
+                  Club_Options: ["Loading clubs..."],
+                  Events: ["Loading events..."]
+                },
+                Spring: {
+                  Course_1: { name: "Course Loading...", description: "Description loading..." },
+                  Course_2: { name: "Course Loading...", description: "Description loading..." },
+                  Course_3: { name: "Course Loading...", description: "Description loading..." },
+                  Club_Options: ["Loading clubs..."],
+                  Events: ["Loading events..."]
+                },
+                Summer: {
+                  Internship: {
+                    name: "Loading internship...",
+                    description: "Description loading..."
+                  }
+                }
+              },
+              Year_2: {
+                Autumn: {
+                  Course_1: { name: "Course Loading...", description: "Description loading..." },
+                  Course_2: { name: "Course Loading...", description: "Description loading..." },
+                  Course_3: { name: "Course Loading...", description: "Description loading..." },
+                  Club_Options: ["Loading clubs..."],
+                  Events: ["Loading events..."]
+                },
+                Winter: {
+                  Course_1: { name: "Course Loading...", description: "Description loading..." },
+                  Course_2: { name: "Course Loading...", description: "Description loading..." },
+                  Course_3: { name: "Course Loading...", description: "Description loading..." },
+                  Club_Options: ["Loading clubs..."],
+                  Events: ["Loading events..."]
+                },
+                Spring: {
+                  Course_1: { name: "Course Loading...", description: "Description loading..." },
+                  Course_2: { name: "Course Loading...", description: "Description loading..." },
+                  Course_3: { name: "Course Loading...", description: "Description loading..." },
+                  Club_Options: ["Loading clubs..."],
+                  Events: ["Loading events..."]
+                },
+                Summer: {
+                  Internship: {
+                    name: "Loading internship...",
+                    description: "Description loading..."
+                  }
+                }
+              }
+            };
+          }
+
+          // Ensure the schedule data has the correct structure
+          const validatedSchedule = {
+            Year_1: {
+              Autumn: scheduleData.Year_1?.Autumn || {
+                Course_1: { name: "Default Course", description: "Default description" },
+                Course_2: { name: "Default Course", description: "Default description" },
+                Course_3: { name: "Default Course", description: "Default description" },
+                Club_Options: ["Default Club"],
+                Events: ["Default Event"]
+              },
+              Winter: scheduleData.Year_1?.Winter || {
+                Course_1: { name: "Default Course", description: "Default description" },
+                Course_2: { name: "Default Course", description: "Default description" },
+                Course_3: { name: "Default Course", description: "Default description" },
+                Club_Options: ["Default Club"],
+                Events: ["Default Event"]
+              },
+              Spring: scheduleData.Year_1?.Spring || {
+                Course_1: { name: "Default Course", description: "Default description" },
+                Course_2: { name: "Default Course", description: "Default description" },
+                Course_3: { name: "Default Course", description: "Default description" },
+                Club_Options: ["Default Club"],
+                Events: ["Default Event"]
+              },
+              Summer: scheduleData.Year_1?.Summer || {
+                Internship: {
+                  name: "Default Internship",
+                  description: "Default description"
+                }
+              }
+            },
+            Year_2: {
+              Autumn: scheduleData.Year_2?.Autumn || {
+                Course_1: { name: "Default Course", description: "Default description" },
+                Course_2: { name: "Default Course", description: "Default description" },
+                Course_3: { name: "Default Course", description: "Default description" },
+                Club_Options: ["Default Club"],
+                Events: ["Default Event"]
+              },
+              Winter: scheduleData.Year_2?.Winter || {
+                Course_1: { name: "Default Course", description: "Default description" },
+                Course_2: { name: "Default Course", description: "Default description" },
+                Course_3: { name: "Default Course", description: "Default description" },
+                Club_Options: ["Default Club"],
+                Events: ["Default Event"]
+              },
+              Spring: scheduleData.Year_2?.Spring || {
+                Course_1: { name: "Default Course", description: "Default description" },
+                Course_2: { name: "Default Course", description: "Default description" },
+                Course_3: { name: "Default Course", description: "Default description" },
+                Club_Options: ["Default Club"],
+                Events: ["Default Event"]
+              },
+              Summer: scheduleData.Year_2?.Summer || {
+                Internship: {
+                  name: "Default Internship",
+                  description: "Default description"
+                }
+              }
+            }
+          };
+
+          setMBASchedule(validatedSchedule);
           setIsSheetOpen(true);
           
           toast({
             title: "Success",
-            description: `Your MBA schedule has been generated in ${difyResponse.data.elapsed_time?.toFixed(2) || 0} seconds!`,
+            description: `Schedule generated in ${data.data.elapsed_time?.toFixed(2) || 0} seconds!`,
           });
-        } catch (parseError) {
-          console.error('Error processing schedule data:', parseError);
+        } catch (error) {
+          console.error('Error processing schedule:', error);
           toast({
             title: "Error",
             description: "Unable to process the schedule data. Please try again.",
             variant: "destructive"
           });
         }
-      } else if (difyResponse.data.status === 'failed') {
-        throw new Error(difyResponse.data.error || 'Failed to generate MBA schedule');
-      } else if (difyResponse.data.status === 'stopped') {
-        toast({
-          title: "Generation Stopped",
-          description: "The schedule generation was stopped. Please try again.",
-          variant: "destructive"
-        });
-      } else {
-        throw new Error('Unexpected response status from API');
+      } else if (data.data?.status === 'failed') {
+        throw new Error(data.data.error || 'Failed to generate schedule');
       }
     } catch (error) {
       console.error('Error:', error);
       toast({
         title: "Error",
-        description: typeof error === 'string' ? error : "Unable to generate your MBA schedule. Please try again later.",
+        description: "Unable to generate your MBA schedule. Please try again later.",
         variant: "destructive"
       });
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -672,65 +947,4 @@ const Index = () => {
                 </div>
 
                 <Button 
-                  type="submit"
-                  className="w-full bg-[#ea384c] hover:bg-[#d42d3d] text-white font-semibold"
-                >
-                  Generate Your MBA Journey
-                  <ArrowRight className="h-5 w-5 ml-2" />
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent 
-          side="bottom" 
-          className="w-[90%] sm:w-[540px] h-[80vh] fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg overflow-y-auto"
-        >
-          <SheetHeader>
-            <SheetTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              Your Two-Year MBA Journey at Booth
-            </SheetTitle>
-          </SheetHeader>
-          
-          <div className="mt-6 space-y-8">
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Year 1</h3>
-              <div className="space-y-4">
-                <TermBlock data={sampleMBAData.Year_1.Autumn} term="Autumn Quarter" />
-                <TermBlock data={sampleMBAData.Year_1.Winter} term="Winter Quarter" />
-                <TermBlock data={sampleMBAData.Year_1.Spring} term="Spring Quarter" />
-                <TermBlock data={sampleMBAData.Year_1.Summer} term="Summer" />
-              </div>
-            </div>
-
-            <Separator className="my-6" />
-
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Year 2</h3>
-              <div className="space-y-4">
-                <TermBlock data={sampleMBAData.Year_2.Autumn} term="Autumn Quarter" />
-                <TermBlock data={sampleMBAData.Year_2.Winter} term="Winter Quarter" />
-                <TermBlock data={sampleMBAData.Year_2.Spring} term="Spring Quarter" />
-                <TermBlock data={sampleMBAData.Year_2.Summer} term="Summer" />
-              </div>
-            </div>
-
-            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-medium mb-2">AI-Generated Insights</h4>
-              <p className="text-sm text-gray-600">
-                Based on your interests in {MBA_Focus_Area?.replace(/_/g, ' ')} and {Extracurricular_Interests}, 
-                here are some recommended courses and activities tailored to your goals: {Professional_Goals}
-              </p>
-            </div>
-          </div>
-        </SheetContent>
-      </Sheet>
-    </div>
-  );
-};
-
-export default Index;
+                  type="
