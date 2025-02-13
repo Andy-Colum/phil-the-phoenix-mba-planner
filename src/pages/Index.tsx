@@ -606,7 +606,7 @@ const Index = () => {
                       </SelectItem>
                       <SelectItem value="Data_Analytics_Tech">
                         <span className="flex items-center gap-2">
-                          <Laptop className="h-4 w-4" />
+                          <Database className="h-4 w-4" />
                           Data Analytics & Tech
                         </span>
                       </SelectItem>
@@ -629,7 +629,7 @@ const Index = () => {
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Step 3: Professional Goals</label>
                   <Input
-                    placeholder="What do you hope to achieve with your MBA?"
+                    placeholder="What are your career aspirations and professional objectives?"
                     value={Professional_Goals}
                     onChange={(e) => setProfessional_Goals(e.target.value)}
                     className="w-full"
@@ -650,7 +650,7 @@ const Index = () => {
                   type="submit"
                   className="w-full bg-[#ea384c] hover:bg-[#d42d3d] text-white font-semibold"
                 >
-                  Start Your Journey
+                  Generate Your MBA Journey
                   <ArrowRight className="h-5 w-5 ml-2" />
                 </Button>
               </form>
