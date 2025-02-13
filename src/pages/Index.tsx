@@ -231,11 +231,12 @@ const Index = () => {
     setIsGenerating(true);
 
     const requestBody = {
+      query: MBA_Program_Type, // This will be the main query parameter
       inputs: {
-        MBA_Program_Type,
-        MBA_Focus_Area,
-        Professional_Goals,
-        Extracurricular_Interests
+        program_type: MBA_Program_Type,
+        focus_area: MBA_Focus_Area,
+        professional_goals: Professional_Goals,
+        extracurricular_interests: Extracurricular_Interests
       },
       response_mode: "blocking",
       user: "booth-mba-user"
