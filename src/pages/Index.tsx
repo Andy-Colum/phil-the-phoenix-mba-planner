@@ -350,23 +350,29 @@ const Index = () => {
 
       if (difyResponse.data.status === 'succeeded') {
         try {
-          // Parse the answer from the API response
-          if (typeof difyResponse.data.outputs === 'string') {
-            const scheduleData = JSON.parse(difyResponse.data.outputs);
-            console.log("Parsed Schedule Data:", scheduleData);
-            setSampleMBAData(scheduleData);
-          } else {
-            // If it's already an object, use it directly
-            console.log("Direct Schedule Data:", difyResponse.data.outputs);
-            setSampleMBAData(difyResponse.data.outputs);
+          let scheduleData;
+          if (difyResponse.data.outputs && typeof difyResponse.data.outputs === 'object') {
+            scheduleData = difyResponse.data.outputs;
+          } else if (typeof difyResponse.data.outputs === 'string') {
+            // Try to find and parse the JSON object within the string
+            const match = difyResponse.data.outputs.match(/\{[\s\S]*\}/);
+            if (match) {
+              scheduleData = JSON.parse(match[0]);
+            }
           }
-          
-          setIsSheetOpen(true);
-          
-          toast({
-            title: "Success",
-            description: `Your MBA schedule has been generated in ${difyResponse.data.elapsed_time?.toFixed(2) || 0} seconds!`,
-          });
+
+          if (scheduleData && scheduleData.Year_1 && scheduleData.Year_2) {
+            console.log("Final Schedule Data:", scheduleData);
+            setSampleMBAData(scheduleData);
+            setIsSheetOpen(true);
+            
+            toast({
+              title: "Success",
+              description: `Your MBA schedule has been generated successfully!`,
+            });
+          } else {
+            throw new Error('Invalid schedule data format');
+          }
         } catch (parseError) {
           console.error('Error processing schedule data:', parseError);
           toast({
@@ -377,12 +383,6 @@ const Index = () => {
         }
       } else if (difyResponse.data.status === 'failed') {
         throw new Error(difyResponse.data.error || 'Failed to generate MBA schedule');
-      } else if (difyResponse.data.status === 'stopped') {
-        toast({
-          title: "Generation Stopped",
-          description: "The schedule generation was stopped. Please try again.",
-          variant: "destructive"
-        });
       } else {
         throw new Error('Unexpected response status from API');
       }
