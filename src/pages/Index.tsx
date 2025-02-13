@@ -53,10 +53,21 @@ const Index = () => {
     setIsGenerating(true);
 
     try {
+      // First get the API key from Supabase
+      const { data: secretData, error: secretError } = await supabase
+        .from('secrets')
+        .select('value')
+        .eq('name', 'DIFY_WORKFLOW_API_KEY')
+        .single();
+
+      if (secretError || !secretData) {
+        throw new Error('Could not retrieve API key');
+      }
+
       const response = await fetch('https://api.dify.ai/v1/workflows/run', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer app-zA9ZDv20AN3bzw4fbTCis0KJ',
+          'Authorization': `Bearer ${secretData.value}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
