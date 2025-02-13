@@ -9,7 +9,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { MBASchedule } from "@/types/mba";
 
 interface MBAFormProps {
-  onScheduleGenerated: (schedule: MBASchedule) => void;
+  onScheduleGenerated: (schedule: MBASchedule, formData: {
+    MBA_Program_Type: string;
+    MBA_Focus_Area: string;
+    Professional_Goals: string;
+    Extracurricular_Interests: string;
+  }) => void;
   isGenerating: boolean;
   setIsGenerating: (value: boolean) => void;
 }
@@ -33,6 +38,13 @@ export const MBAForm = ({ onScheduleGenerated, isGenerating, setIsGenerating }: 
       return;
     }
 
+    const formData = {
+      MBA_Program_Type,
+      MBA_Focus_Area,
+      Professional_Goals,
+      Extracurricular_Interests
+    };
+
     setIsGenerating(true);
 
     try {
@@ -53,12 +65,7 @@ export const MBAForm = ({ onScheduleGenerated, isGenerating, setIsGenerating }: 
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          inputs: {
-            MBA_Program_Type,
-            MBA_Focus_Area,
-            Professional_Goals,
-            Extracurricular_Interests
-          },
+          inputs: formData,
           response_mode: "blocking",
           user: "booth-mba-user"
         })
@@ -107,7 +114,7 @@ export const MBAForm = ({ onScheduleGenerated, isGenerating, setIsGenerating }: 
             };
           }
 
-          onScheduleGenerated(scheduleData);
+          onScheduleGenerated(scheduleData, formData);
           
           toast({
             title: "Success",

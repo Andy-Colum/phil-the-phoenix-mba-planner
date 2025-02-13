@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GraduationCap } from "lucide-react";
@@ -7,19 +6,27 @@ import { ChatSection } from "@/components/ChatSection";
 import { MBAForm } from "@/components/MBAForm";
 import { ScheduleViewer } from "@/components/ScheduleViewer";
 
+interface FormData {
+  MBA_Program_Type: string;
+  MBA_Focus_Area: string;
+  Professional_Goals: string;
+  Extracurricular_Interests: string;
+}
+
 const Index = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [sampleMBAData, setSampleMBAData] = useState<MBASchedule>(defaultMBASchedule);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     MBA_Program_Type: "",
     MBA_Focus_Area: "",
     Professional_Goals: "",
     Extracurricular_Interests: ""
   });
 
-  const handleScheduleGenerated = (schedule: MBASchedule) => {
+  const handleScheduleGenerated = (schedule: MBASchedule, newFormData: FormData) => {
     setSampleMBAData(schedule);
+    setFormData(newFormData);
     setIsSheetOpen(true);
   };
 
