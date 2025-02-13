@@ -1,4 +1,3 @@
-<lov-code>
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -820,4 +819,25 @@ const Index = () => {
               <h3 className="text-xl font-semibold mb-4">Year 1</h3>
               <div className="space-y-4">
                 <TermBlock data={sampleMBAData.Year_1.Autumn} term="Autumn Quarter" />
-                <TermBlock data={sampleMBAData.Year_1.Winter} term="Winter Quarter
+                <TermBlock data={sampleMBAData.Year_1.Winter} term="Winter Quarter" />
+                <TermBlock data={sampleMBAData.Year_1.Spring} term="Spring Quarter" />
+                <TermBlock data={sampleMBAData.Year_1.Summer} term="Summer" />
+              </div>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold mb-4">Year 2</h3>
+              <div className="space-y-4">
+                <TermBlock data={sampleMBAData.Year_2.Autumn} term="Autumn Quarter" />
+                <TermBlock data={sampleMBAData.Year_2.Winter} term="Winter Quarter" />
+                <TermBlock data={sampleMBAData.Year_2.Spring} term="Spring Quarter" />
+                <TermBlock data={sampleMBAData.Year_2.Summer} term="Summer" />
+              </div>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+    </div>
+  );
+};
+
+export default Index;
