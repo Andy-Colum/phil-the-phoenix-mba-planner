@@ -23,7 +23,8 @@ import {
   BookOpen,
   Laptop,
   LineChart,
-  Loader
+  Loader,
+  Download
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
@@ -175,6 +176,33 @@ const Index = () => {
     } finally {
       setIsGenerating(false);
     }
+  };
+
+  const handleDownload = () => {
+    const scheduleData = {
+      studentInfo: {
+        programType: MBA_Program_Type,
+        focusArea: MBA_Focus_Area,
+        professionalGoals: Professional_Goals,
+        extracurricularInterests: Extracurricular_Interests
+      },
+      schedule: sampleMBAData
+    };
+
+    const blob = new Blob([JSON.stringify(scheduleData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'booth-mba-schedule.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    toast({
+      title: "Download Started",
+      description: "Your MBA schedule has been downloaded successfully!",
+    });
   };
 
   type CourseData = {
@@ -660,11 +688,19 @@ const Index = () => {
           side="bottom" 
           className="w-[90%] sm:w-[540px] h-[80vh] fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg overflow-y-auto"
         >
-          <SheetHeader>
+          <SheetHeader className="flex justify-between items-center">
             <SheetTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
               Your Two-Year MBA Journey at Booth
             </SheetTitle>
+            <Button
+              onClick={handleDownload}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <Download className="h-4 w-4" />
+              Download Schedule
+            </Button>
           </SheetHeader>
           
           <div className="mt-6 space-y-8">
