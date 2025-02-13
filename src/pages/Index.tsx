@@ -164,10 +164,15 @@ const Index = () => {
         throw new Error('Workflow API key not found');
       }
 
+      console.log('Workflow Key Format:', {
+        keyStart: workflowKey.value.substring(0, 10) + '...',
+        keyLength: workflowKey.value.length
+      });
+
       const response = await fetch('https://api.dify.ai/v1/workflows/run', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${workflowKey.value}`,
+          'Authorization': `Bearer ${workflowKey.value.trim()}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -182,9 +187,16 @@ const Index = () => {
         })
       });
 
+      console.log('API Response Status:', response.status);
+      console.log('API Response Status Text:', response.statusText);
+
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('API Error:', errorData);
+        console.error('API Error Details:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorData
+        });
         throw new Error(`API error: ${errorData.message || response.statusText}`);
       }
 
@@ -401,10 +413,15 @@ const Index = () => {
         throw new Error('Chat API key not found');
       }
 
+      console.log('Chat Key Format:', {
+        keyStart: chatKey.value.substring(0, 10) + '...',
+        keyLength: chatKey.value.length
+      });
+
       const response = await fetch('https://api.dify.ai/v1/chat-messages', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${chatKey.value}`,
+          'Authorization': `Bearer ${chatKey.value.trim()}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -416,9 +433,16 @@ const Index = () => {
         })
       });
 
+      console.log('Chat API Response Status:', response.status);
+      console.log('Chat API Response Status Text:', response.statusText);
+
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('API Error:', errorData);
+        console.error('Chat API Error Details:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorData
+        });
         throw new Error(`API error: ${errorData.message || response.statusText}`);
       }
 
