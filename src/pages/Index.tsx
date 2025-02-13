@@ -318,71 +318,57 @@ const Index = () => {
     }
 
     try {
-      const API_KEY = 'app-zA9ZDv20AN3bzw4fbTCis0KJ';
-      const BASE_URL = 'https://api.dify.ai/v1';
-
-      const runResponse = await fetch(`${BASE_URL}/workflows/run`, {
+      const response = await fetch('https://api.dify.ai/v1/workflows/run', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${API_KEY}`,
+          'Authorization': 'Bearer app-BMVzb50wyz8hw04pC90s3Rig',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           inputs: {
-            "MBA_Program_Type": MBA_Program_Type,
-            "MBA_Focus_Area": MBA_Focus_Area,
-            "Professional_Goals": Professional_Goals,
-            "Extracurricular_Interests": Extracurricular_Interests
+            MBA_Program_Type,
+            MBA_Focus_Area,
+            Professional_Goals,
+            Extracurricular_Interests
           },
           response_mode: "blocking",
           user: "booth-mba-user"
         })
       });
 
-      if (!runResponse.ok) {
-        const errorData = await runResponse.json();
-        console.error('API Error:', errorData);
-        throw new Error(`API responded with status: ${runResponse.status}, message: ${errorData.message}`);
+      if (!response.ok) {
+        throw new Error(`API responded with status: ${response.status}`);
       }
 
-      const difyResponse: DifyResponse = await runResponse.json();
-      console.log("Dify API Response:", difyResponse);
+      const data = await response.json();
+      console.log('Dify API Response:', data);
 
-      if (difyResponse.data.status === 'succeeded' && difyResponse.data.outputs) {
+      if (data.answer) {
         try {
-          const scheduleData: MBASchedule = difyResponse.data.outputs;
-          console.log("Schedule Data:", scheduleData);
+          const scheduleData: MBASchedule = JSON.parse(data.answer);
           setSampleMBAData(scheduleData);
           setIsSheetOpen(true);
           
           toast({
             title: "Success",
-            description: `Your MBA schedule has been generated in ${difyResponse.data.elapsed_time?.toFixed(2) || 0} seconds!`,
+            description: "Your MBA schedule has been generated successfully!",
           });
         } catch (parseError) {
-          console.error('Error processing schedule data:', parseError);
+          console.error('Error parsing schedule:', parseError);
           toast({
             title: "Error",
             description: "Unable to process the schedule data. Please try again.",
             variant: "destructive"
           });
         }
-      } else if (difyResponse.data.status === 'failed') {
-        throw new Error(difyResponse.data.error || 'Failed to generate MBA schedule');
-      } else if (difyResponse.data.status === 'stopped') {
-        toast({
-          title: "Generation Stopped",
-          description: "The schedule generation was stopped. Please try again.",
-          variant: "destructive"
-        });
       } else {
-        throw new Error('Unexpected response status from API');
+        throw new Error('No answer received from API');
       }
     } catch (error) {
       console.error('Error:', error);
       toast({
         title: "Error",
-        description: typeof error === 'string' ? error : "Unable to generate your MBA schedule. Please try again later.",
+        description: "Unable to generate your MBA schedule. Please try again later.",
         variant: "destructive"
       });
     }
