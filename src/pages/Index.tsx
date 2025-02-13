@@ -105,25 +105,6 @@ const Index = () => {
     }
   };
 
-  type TermData = {
-    Courses?: string[];
-    Clubs?: string[];
-    Events?: string[];
-    Internship?: string;
-  };
-
-  type YearData = {
-    Autumn: TermData;
-    Winter: TermData;
-    Spring: TermData;
-    Summer: TermData;
-  };
-
-  type MBASchedule = {
-    Year_1: YearData;
-    Year_2: YearData;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSheetOpen(true);
@@ -136,10 +117,10 @@ const Index = () => {
     };
     
     try {
-      const response = await fetch('https://api.dify.ai/v1/chat-messages', {
+      const response = await fetch('https://api.dify.ai/v1/workflows', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer app-BMVzb50wyz8hw04pC90s3Rig',
+          'Authorization': 'Bearer app-zA9ZDv20AN3bzw4fbTCis0KJ',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -150,7 +131,6 @@ const Index = () => {
             Goals: ${Professional_Goals}, 
             Interests: ${Extracurricular_Interests}`,
           response_mode: "blocking",
-          conversation_id: "",
           user: "booth-mba-user",
         })
       });
@@ -162,9 +142,9 @@ const Index = () => {
       const data = await response.json();
       console.log("API Response:", data);
 
-      if (data.answer) {
+      if (data.output) {
         try {
-          const scheduleData = JSON.parse(data.answer);
+          const scheduleData = JSON.parse(data.output);
           console.log("Parsed Schedule Data:", scheduleData);
         } catch (parseError) {
           console.error('Error parsing schedule JSON:', parseError);
@@ -183,6 +163,25 @@ const Index = () => {
         variant: "destructive"
       });
     }
+  };
+
+  type TermData = {
+    Courses?: string[];
+    Clubs?: string[];
+    Events?: string[];
+    Internship?: string;
+  };
+
+  type YearData = {
+    Autumn: TermData;
+    Winter: TermData;
+    Spring: TermData;
+    Summer: TermData;
+  };
+
+  type MBASchedule = {
+    Year_1: YearData;
+    Year_2: YearData;
   };
 
   const TermBlock = ({ data, term }: { data: TermData; term: string }) => {
