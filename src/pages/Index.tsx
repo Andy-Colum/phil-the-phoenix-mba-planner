@@ -341,11 +341,11 @@ const Index = () => {
       }
 
       const data = await response.json();
-      console.log('Dify API Response:', data);
+      console.log("Schedule Data:", data);
 
-      if (data.answer) {
+      if (data.output) {
         try {
-          const scheduleData: MBASchedule = JSON.parse(data.answer);
+          const scheduleData: MBASchedule = JSON.parse(data.output);
           setSampleMBAData(scheduleData);
           setIsSheetOpen(true);
           
@@ -362,7 +362,7 @@ const Index = () => {
           });
         }
       } else {
-        throw new Error('No answer received from API');
+        throw new Error('No output received from API');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -637,7 +637,7 @@ const Index = () => {
                       <SelectValue placeholder="Choose your program" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Full-Time_MBA">
+                      <SelectItem value="Full_Time_MBA">
                         <span className="flex items-center gap-2">
                           <GraduationCap className="h-4 w-4" />
                           Full-Time MBA
