@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -371,7 +370,7 @@ const Index = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl font-bold text-[#ea384c]">
                 <GraduationCap className="h-6 w-6" />
-                MBA Program Overview
+                Your MBA Journey
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -498,4 +497,3 @@ const Index = () => {
 };
 
 export default Index;
-
