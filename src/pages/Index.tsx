@@ -302,11 +302,10 @@ const Index = () => {
 
     try {
       const API_KEY = 'app-BMVzb50wyz8hw04pC90s3Rig';
-      const WORKFLOW_ID = '19eff89f-ec03-4f75-b0fc-897e7effea02';
       const BASE_URL = 'https://api.dify.ai/v1';
 
-      // First, trigger the workflow run
-      const runResponse = await fetch(`${BASE_URL}/workflows/run`, {
+      // Test the base API endpoint
+      const response = await fetch(`${BASE_URL}/`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${API_KEY}`,
@@ -323,34 +322,19 @@ const Index = () => {
         })
       });
 
-      if (!runResponse.ok) {
-        const errorData = await runResponse.json();
+      if (!response.ok) {
+        const errorData = await response.json();
         console.error('API Error:', errorData);
-        throw new Error(`API responded with status: ${runResponse.status}, message: ${errorData.message}`);
+        throw new Error(`API responded with status: ${response.status}, message: ${errorData.message}`);
       }
 
-      const runData = await runResponse.json();
-      console.log("Initial Workflow Run Response:", runData);
+      const data = await response.json();
+      console.log("API Response:", data);
 
-      // Get the workflow result
-      const resultResponse = await fetch(`${BASE_URL}/workflows/run/${runData.id}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${API_KEY}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!resultResponse.ok) {
-        throw new Error(`Failed to get workflow result: ${resultResponse.status}`);
-      }
-
-      const resultData = await resultResponse.json();
-      console.log("Workflow Result:", resultData);
-
-      if (resultData.status === 'succeeded' && resultData.outputs) {
+      // Handle the response data
+      if (data.outputs) {
         try {
-          const scheduleData: MBASchedule = resultData.outputs;
+          const scheduleData: MBASchedule = data.outputs;
           console.log("Schedule Data:", scheduleData);
           setSampleMBAData(scheduleData);
           setIsSheetOpen(true);
@@ -367,10 +351,8 @@ const Index = () => {
             variant: "destructive"
           });
         }
-      } else if (resultData.status === 'failed') {
-        throw new Error(`Workflow failed: ${resultData.error || 'Unknown error'}`);
       } else {
-        throw new Error('No output data received from workflow');
+        throw new Error('No output data received from API');
       }
     } catch (error) {
       console.error('Error:', error);
