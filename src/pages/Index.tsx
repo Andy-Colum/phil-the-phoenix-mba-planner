@@ -139,7 +139,7 @@ const Index = () => {
       const response = await fetch('https://api.dify.ai/v1/completion-messages', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer app-zA9ZDv20AN3bzw4fbTCis0KJ',
+          'Authorization': 'Bearer app-BMVzb50wyz8hw04pC90s3Rig',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
