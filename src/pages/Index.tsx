@@ -137,7 +137,175 @@ const Index = () => {
     Year_2: YearData;
   };
 
-  const [sampleMBAData, setSampleMBAData] = useState<MBASchedule>({
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!MBA_Program_Type || !MBA_Focus_Area || !Professional_Goals || !Extracurricular_Interests) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all fields before generating your MBA schedule.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const systemPrompt = `
+      You are an AI assistant that generates detailed MBA schedules. Please provide a comprehensive two-year schedule following this exact JSON schema:
+      {
+        "Year_1": {
+          "Autumn/Winter/Spring": {
+            "Course_1": { "name": "string", "description": "string" },
+            "Course_2": { "name": "string", "description": "string" },
+            "Course_3": { "name": "string", "description": "string" },
+            "Club_Options": ["string"],
+            "Events": ["string"]
+          },
+          "Summer": {
+            "Internship": { "name": "string", "description": "string" }
+          }
+        },
+        "Year_2": {
+          // Same structure as Year_1
+        }
+      }
+      Ensure all course names and descriptions are relevant to the student's preferences.
+    `;
+
+    const userQuery = `
+      Based on these preferences:
+      1. Program Type: ${MBA_Program_Type}
+      2. Focus Area: ${MBA_Focus_Area}
+      3. Professional Goals: ${Professional_Goals}
+      4. Extracurricular Interests: ${Extracurricular_Interests}
+      
+      Generate a detailed two-year MBA schedule that matches this profile. Include relevant courses, club recommendations, and events.
+    `;
+    
+    try {
+      const response = await fetch('https://api.dify.ai/v1/chat-messages', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer app-BMVzb50wyz8hw04pC90s3Rig',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          inputs: {
+            program_type: MBA_Program_Type,
+            focus_area: MBA_Focus_Area,
+            goals: Professional_Goals,
+            interests: Extracurricular_Interests
+          },
+          query: userQuery,
+          system_prompt: systemPrompt,
+          response_mode: "blocking",
+          user: "booth-mba-user"
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`API responded with status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("API Response:", data);
+
+      if (data.answer) {
+        try {
+          const scheduleData: MBASchedule = JSON.parse(data.answer);
+          console.log("Parsed Schedule Data:", scheduleData);
+          setIsSheetOpen(true);
+        } catch (parseError) {
+          console.error('Error parsing JSON:', parseError);
+          toast({
+            title: "Error",
+            description: "Unable to process the schedule data. Please try again.",
+            variant: "destructive"
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: "Unable to generate your MBA schedule. Please try again later.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const TermBlock = ({ data, term }: { data: TermData | SummerData; term: string }) => {
+    const isSummer = term === "Summer";
+    
+    return (
+      <Collapsible className="w-full">
+        <CollapsibleTrigger className="w-full">
+          <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow">
+            <h4 className="font-medium text-lg">{term}</h4>
+            <ArrowRight className="h-5 w-5 transform transition-transform group-open:rotate-90" />
+          </div>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="p-4 space-y-4 bg-gray-50 rounded-lg mt-2">
+          {!isSummer ? (
+            <>
+              <div>
+                <h5 className="font-medium text-sm text-gray-700 mb-2">Courses</h5>
+                <div className="space-y-3">
+                  {Object.entries((data as TermData))
+                    .filter(([key]) => key.startsWith('Course'))
+                    .map(([key, course]) => (
+                      <div key={key} className="bg-white p-3 rounded-lg shadow-sm">
+                        <div className="flex items-center gap-2">
+                          <BookOpen className="h-4 w-4 text-[#ea384c]" />
+                          <h6 className="font-medium">{course.name}</h6>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-1 ml-6">{course.description}</p>
+                      </div>
+                    ))}
+                </div>
+              </div>
+              <div>
+                <h5 className="font-medium text-sm text-gray-700 mb-2">Clubs</h5>
+                <ul className="space-y-2">
+                  {(data as TermData).Club_Options.map((club, idx) => (
+                    <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
+                      <Users className="h-4 w-4" />
+                      {club}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h5 className="font-medium text-sm text-gray-700 mb-2">Events</h5>
+                <ul className="space-y-2">
+                  {(data as TermData).Events.map((event, idx) => (
+                    <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      {event}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </>
+          ) : (
+            <div>
+              <h5 className="font-medium text-sm text-gray-700 mb-2">Internship</h5>
+              <div className="bg-white p-3 rounded-lg shadow-sm">
+                <div className="flex items-center gap-2">
+                  <Briefcase className="h-4 w-4 text-[#ea384c]" />
+                  <h6 className="font-medium">{(data as SummerData).Internship.name}</h6>
+                </div>
+                <p className="text-sm text-gray-600 mt-1 ml-6">
+                  {(data as SummerData).Internship.description}
+                </p>
+              </div>
+            </div>
+          )}
+        </CollapsibleContent>
+      </Collapsible>
+    );
+  };
+
+  const sampleMBAData: MBASchedule = {
     Year_1: {
       Autumn: {
         Course_1: {
@@ -286,152 +454,6 @@ const Index = () => {
         }
       }
     }
-  });
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!MBA_Program_Type || !MBA_Focus_Area || !Professional_Goals || !Extracurricular_Interests) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all fields before generating your MBA schedule.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    try {
-      const response = await fetch('https://api.dify.ai/v1/workflows/run', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer app-BMVzb50wyz8hw04pC90s3Rig',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          inputs: {
-            program_type: MBA_Program_Type,
-            focus_area: MBA_Focus_Area,
-            professional_goals: Professional_Goals,
-            extracurricular_interests: Extracurricular_Interests
-          },
-          query: `Generate a detailed MBA schedule for a ${MBA_Program_Type} program with focus on ${MBA_Focus_Area}. 
-                 Professional Goals: ${Professional_Goals}
-                 Extracurricular Interests: ${Extracurricular_Interests}`,
-          user: "booth-mba-user",
-          response_mode: "blocking"
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`API responded with status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("Dify API Response:", data);
-
-      if (data.data?.outputs?.schedule) {
-        try {
-          const scheduleData: MBASchedule = JSON.parse(data.data.outputs.schedule);
-          console.log("Parsed Schedule Data:", scheduleData);
-          setSampleMBAData(scheduleData);
-          setIsSheetOpen(true);
-        } catch (parseError) {
-          console.error('Error parsing schedule JSON:', parseError);
-          toast({
-            title: "Error",
-            description: "Unable to process the schedule data. Please try again.",
-            variant: "destructive"
-          });
-        }
-      } else {
-        console.error('No schedule data in response:', data);
-        toast({
-          title: "Error",
-          description: "No schedule data received. Please try again.",
-          variant: "destructive"
-        });
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      toast({
-        title: "Error",
-        description: "Unable to generate your MBA schedule. Please try again later.",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const TermBlock = ({ data, term }: { data: TermData | SummerData; term: string }) => {
-    const isSummer = term === "Summer";
-    
-    return (
-      <Collapsible className="w-full">
-        <CollapsibleTrigger className="w-full">
-          <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow">
-            <h4 className="font-medium text-lg">{term}</h4>
-            <ArrowRight className="h-5 w-5 transform transition-transform group-open:rotate-90" />
-          </div>
-        </CollapsibleTrigger>
-        <CollapsibleContent className="p-4 space-y-4 bg-gray-50 rounded-lg mt-2">
-          {!isSummer ? (
-            <>
-              <div>
-                <h5 className="font-medium text-sm text-gray-700 mb-2">Courses</h5>
-                <div className="space-y-3">
-                  {(['Course_1', 'Course_2', 'Course_3'] as const).map((courseKey) => {
-                    const course = (data as TermData)[courseKey];
-                    return (
-                      <div key={courseKey} className="bg-white p-3 rounded-lg shadow-sm">
-                        <div className="flex items-center gap-2">
-                          <BookOpen className="h-4 w-4 text-[#ea384c]" />
-                          <h6 className="font-medium">{course.name}</h6>
-                        </div>
-                        <p className="text-sm text-gray-600 mt-1 ml-6">{course.description}</p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-              <div>
-                <h5 className="font-medium text-sm text-gray-700 mb-2">Clubs</h5>
-                <ul className="space-y-2">
-                  {(data as TermData).Club_Options.map((club, idx) => (
-                    <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
-                      <Users className="h-4 w-4" />
-                      {club}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h5 className="font-medium text-sm text-gray-700 mb-2">Events</h5>
-                <ul className="space-y-2">
-                  {(data as TermData).Events.map((event, idx) => (
-                    <li key={idx} className="text-sm text-gray-600 flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
-                      {event}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </>
-          ) : (
-            <div>
-              <h5 className="font-medium text-sm text-gray-700 mb-2">Internship</h5>
-              <div className="bg-white p-3 rounded-lg shadow-sm">
-                <div className="flex items-center gap-2">
-                  <Briefcase className="h-4 w-4 text-[#ea384c]" />
-                  <h6 className="font-medium">{(data as SummerData).Internship.name}</h6>
-                </div>
-                <p className="text-sm text-gray-600 mt-1 ml-6">
-                  {(data as SummerData).Internship.description}
-                </p>
-              </div>
-            </div>
-          )}
-        </CollapsibleContent>
-      </Collapsible>
-    );
   };
 
   return (
