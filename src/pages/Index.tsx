@@ -301,11 +301,9 @@ const Index = () => {
     }
 
     try {
-      const API_KEY = 'app-BMVzb50wyz8hw04pC90s3Rig';
-      const WORKFLOW_ID = '19eff89f-ec03-4f75-b0fc-897e7effea02';
+      const API_KEY = 'app-zA9ZDv20AN3bzw4fbTCis0KJ';
       const BASE_URL = 'https://api.dify.ai/v1';
 
-      // First, trigger the workflow run
       const runResponse = await fetch(`${BASE_URL}/workflows/run`, {
         method: 'POST',
         headers: {
@@ -313,13 +311,13 @@ const Index = () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          workflow_id: WORKFLOW_ID,
           inputs: {
             program_type: MBA_Program_Type,
             focus_area: MBA_Focus_Area,
             professional_goals: Professional_Goals,
             extracurricular_interests: Extracurricular_Interests
           },
+          response_mode: "streaming",
           user: "booth-mba-user"
         })
       });
@@ -331,27 +329,11 @@ const Index = () => {
       }
 
       const runData = await runResponse.json();
-      console.log("Initial Workflow Run Response:", runData);
+      console.log("API Response:", runData);
 
-      // Get the workflow result
-      const resultResponse = await fetch(`${BASE_URL}/workflows/run/${runData.id}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${API_KEY}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!resultResponse.ok) {
-        throw new Error(`Failed to get workflow result: ${resultResponse.status}`);
-      }
-
-      const resultData = await resultResponse.json();
-      console.log("Workflow Result:", resultData);
-
-      if (resultData.status === 'succeeded' && resultData.outputs) {
+      if (runData.outputs) {
         try {
-          const scheduleData: MBASchedule = resultData.outputs;
+          const scheduleData: MBASchedule = runData.outputs;
           console.log("Schedule Data:", scheduleData);
           setSampleMBAData(scheduleData);
           setIsSheetOpen(true);
@@ -368,10 +350,8 @@ const Index = () => {
             variant: "destructive"
           });
         }
-      } else if (resultData.status === 'failed') {
-        throw new Error(`Workflow failed: ${resultData.error || 'Unknown error'}`);
       } else {
-        throw new Error('No output data received from workflow');
+        throw new Error('No output data received from API');
       }
     } catch (error) {
       console.error('Error:', error);
