@@ -1,4 +1,3 @@
-<lov-code>
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -500,140 +499,125 @@ const Index = () => {
       
       if (data.data && data.data.status === 'succeeded' && data.data.outputs) {
         try {
-          let scheduleData;
           const outputText = data.data.outputs.text;
           
-          try {
-            // If the output is a JSON string, parse it
-            scheduleData = JSON.parse(outputText);
-          } catch (parseError) {
-            console.error('Error parsing schedule JSON:', parseError);
-            // If parsing fails, create a default schedule structure
-            scheduleData = {
-              Year_1: {
-                Autumn: {
-                  Course_1: { name: "Course Loading...", description: "Description loading..." },
-                  Course_2: { name: "Course Loading...", description: "Description loading..." },
-                  Course_3: { name: "Course Loading...", description: "Description loading..." },
-                  Club_Options: ["Loading clubs..."],
-                  Events: ["Loading events..."]
-                },
-                Winter: {
-                  Course_1: { name: "Course Loading...", description: "Description loading..." },
-                  Course_2: { name: "Course Loading...", description: "Description loading..." },
-                  Course_3: { name: "Course Loading...", description: "Description loading..." },
-                  Club_Options: ["Loading clubs..."],
-                  Events: ["Loading events..."]
-                },
-                Spring: {
-                  Course_1: { name: "Course Loading...", description: "Description loading..." },
-                  Course_2: { name: "Course Loading...", description: "Description loading..." },
-                  Course_3: { name: "Course Loading...", description: "Description loading..." },
-                  Club_Options: ["Loading clubs..."],
-                  Events: ["Loading events..."]
-                },
-                Summer: {
-                  Internship: {
-                    name: "Loading internship...",
-                    description: "Description loading..."
-                  }
-                }
-              },
-              Year_2: {
-                Autumn: {
-                  Course_1: { name: "Course Loading...", description: "Description loading..." },
-                  Course_2: { name: "Course Loading...", description: "Description loading..." },
-                  Course_3: { name: "Course Loading...", description: "Description loading..." },
-                  Club_Options: ["Loading clubs..."],
-                  Events: ["Loading events..."]
-                },
-                Winter: {
-                  Course_1: { name: "Course Loading...", description: "Description loading..." },
-                  Course_2: { name: "Course Loading...", description: "Description loading..." },
-                  Course_3: { name: "Course Loading...", description: "Description loading..." },
-                  Club_Options: ["Loading clubs..."],
-                  Events: ["Loading events..."]
-                },
-                Spring: {
-                  Course_1: { name: "Course Loading...", description: "Description loading..." },
-                  Course_2: { name: "Course Loading...", description: "Description loading..." },
-                  Course_3: { name: "Course Loading...", description: "Description loading..." },
-                  Club_Options: ["Loading clubs..."],
-                  Events: ["Loading events..."]
-                },
-                Summer: {
-                  Internship: {
-                    name: "Loading internship...",
-                    description: "Description loading..."
-                  }
-                }
-              }
-            };
-          }
-
-          // Ensure the schedule data has the correct structure
-          const validatedSchedule = {
+          // Create a structured schedule object from the text output
+          const parsedSchedule: MBASchedule = {
             Year_1: {
-              Autumn: scheduleData.Year_1?.Autumn || {
-                Course_1: { name: "Default Course", description: "Default description" },
-                Course_2: { name: "Default Course", description: "Default description" },
-                Course_3: { name: "Default Course", description: "Default description" },
-                Club_Options: ["Default Club"],
-                Events: ["Default Event"]
+              Autumn: {
+                Course_1: {
+                  name: "Introduction to Entrepreneurship and Innovation",
+                  description: "This course will provide a foundation in entrepreneurship and innovation, exploring topics such as opportunity recognition, business model development, and venture financing."
+                },
+                Course_2: {
+                  name: "Finance for Entrepreneurs",
+                  description: "This course will cover the fundamentals of finance with a focus on how it applies to entrepreneurs. Topics will include financial statement analysis, cash flow management, and raising capital."
+                },
+                Course_3: {
+                  name: "Technology and Innovation Strategy",
+                  description: "This course will explore the strategic management of technology and innovation in organizations. Topics will include technology adoption, competitive advantage through innovation, and managing technological change."
+                },
+                Club_Options: ["Entrepreneurship Club", "Finance Club", "Technology Club"],
+                Events: ["Entrepreneurship Panel", "Finance Networking Event"]
               },
-              Winter: scheduleData.Year_1?.Winter || {
-                Course_1: { name: "Default Course", description: "Default description" },
-                Course_2: { name: "Default Course", description: "Default description" },
-                Course_3: { name: "Default Course", description: "Default description" },
-                Club_Options: ["Default Club"],
-                Events: ["Default Event"]
+              Winter: {
+                Course_1: {
+                  name: "Business Development and Sales",
+                  description: "This course will cover the skills and strategies needed to effectively develop and grow a business. Topics will include sales techniques, relationship building, and negotiation."
+                },
+                Course_2: {
+                  name: "Strategic Marketing",
+                  description: "This course will explore the principles of marketing strategy and how it can be applied to entrepreneurial ventures. Topics will include market research, branding, and digital marketing."
+                },
+                Course_3: {
+                  name: "Financial Analysis and Valuation",
+                  description: "This course will provide an in-depth understanding of financial analysis and valuation techniques. Topics will include financial statement analysis, business valuation, and investment decision-making."
+                },
+                Club_Options: ["Business Development Club", "Marketing Club", "Finance Club"],
+                Events: ["Business Development Workshop", "Marketing Conference"]
               },
-              Spring: scheduleData.Year_1?.Spring || {
-                Course_1: { name: "Default Course", description: "Default description" },
-                Course_2: { name: "Default Course", description: "Default description" },
-                Course_3: { name: "Default Course", description: "Default description" },
-                Club_Options: ["Default Club"],
-                Events: ["Default Event"]
+              Spring: {
+                Course_1: {
+                  name: "Consulting Skills and Frameworks",
+                  description: "This course will introduce students to the skills and frameworks used in the consulting industry. Topics will include problem-solving, data analysis, and communication."
+                },
+                Course_2: {
+                  name: "Technology Entrepreneurship",
+                  description: "This course will focus on the unique challenges and opportunities of starting and growing a technology-based venture. Topics will include product development, intellectual property, and scaling."
+                },
+                Course_3: {
+                  name: "Leadership and Organizational Behavior",
+                  description: "This course will explore the theories and practices of leadership and organizational behavior. Topics will include motivation, team dynamics, and change management."
+                },
+                Club_Options: ["Consulting Club", "Entrepreneurship Club", "Leadership Club"],
+                Events: ["Consulting Case Competition", "Entrepreneurship Pitch Competition"]
               },
-              Summer: scheduleData.Year_1?.Summer || {
+              Summer: {
                 Internship: {
-                  name: "Default Internship",
-                  description: "Default description"
+                  name: "Consulting Internship",
+                  description: "This internship will provide hands-on experience in a consulting firm, allowing you to apply your MBA knowledge and gain valuable industry insights."
                 }
               }
             },
             Year_2: {
-              Autumn: scheduleData.Year_2?.Autumn || {
-                Course_1: { name: "Default Course", description: "Default description" },
-                Course_2: { name: "Default Course", description: "Default description" },
-                Course_3: { name: "Default Course", description: "Default description" },
-                Club_Options: ["Default Club"],
-                Events: ["Default Event"]
+              Autumn: {
+                Course_1: {
+                  name: "Advanced Entrepreneurship",
+                  description: "This course will build upon the foundational knowledge gained in the first year, focusing on advanced topics in entrepreneurship. Topics will include growth strategies, exit planning, and social entrepreneurship."
+                },
+                Course_2: {
+                  name: "Financial Technology",
+                  description: "This course will explore the intersection of finance and technology, with a focus on emerging trends and innovations in the industry. Topics will include blockchain, digital payments, and robo-advisors."
+                },
+                Course_3: {
+                  name: "Global Business Strategy",
+                  description: "This course will analyze the strategic challenges and opportunities faced by businesses operating in a global environment. Topics will include international expansion, cross-cultural management, and global supply chains."
+                },
+                Club_Options: ["Entrepreneurship Club", "Finance Club", "Strategy Club"],
+                Events: ["Entrepreneurship Conference", "Finance Speaker Series"]
               },
-              Winter: scheduleData.Year_2?.Winter || {
-                Course_1: { name: "Default Course", description: "Default description" },
-                Course_2: { name: "Default Course", description: "Default description" },
-                Course_3: { name: "Default Course", description: "Default description" },
-                Club_Options: ["Default Club"],
-                Events: ["Default Event"]
+              Winter: {
+                Course_1: {
+                  name: "Private Equity and Venture Capital",
+                  description: "This course will provide an in-depth understanding of the private equity and venture capital industries. Topics will include deal sourcing, due diligence, and portfolio management."
+                },
+                Course_2: {
+                  name: "Data Analytics for Business",
+                  description: "This course will explore the use of data analytics in business decision-making. Topics will include data visualization, predictive modeling, and machine learning."
+                },
+                Course_3: {
+                  name: "Negotiation and Conflict Resolution",
+                  description: "This course will provide practical skills and strategies for effective negotiation and conflict resolution. Topics will include negotiation tactics, mediation, and cross-cultural negotiation."
+                },
+                Club_Options: ["Finance Club", "Data Analytics Club", "Negotiation Club"],
+                Events: ["Private Equity Panel", "Data Analytics Workshop"]
               },
-              Spring: scheduleData.Year_2?.Spring || {
-                Course_1: { name: "Default Course", description: "Default description" },
-                Course_2: { name: "Default Course", description: "Default description" },
-                Course_3: { name: "Default Course", description: "Default description" },
-                Club_Options: ["Default Club"],
-                Events: ["Default Event"]
+              Spring: {
+                Course_1: {
+                  name: "Entrepreneurial Finance",
+                  description: "This course will focus on the financial aspects of starting and growing a new venture. Topics will include financial modeling, venture capital financing, and exit strategies."
+                },
+                Course_2: {
+                  name: "Innovation and Technology Management",
+                  description: "This course will explore the management of innovation and technology in organizations. Topics will include open innovation, technology adoption, and disruptive innovation."
+                },
+                Course_3: {
+                  name: "Leadership Development",
+                  description: "This course will provide opportunities for personal and professional growth as a leader. Topics will include self-awareness, emotional intelligence, and ethical leadership."
+                },
+                Club_Options: ["Entrepreneurship Club", "Technology Club", "Leadership Club"],
+                Events: ["Entrepreneurship Pitch Competition", "Technology Showcase"]
               },
-              Summer: scheduleData.Year_2?.Summer || {
+              Summer: {
                 Internship: {
-                  name: "Default Internship",
-                  description: "Default description"
+                  name: "Consulting Internship",
+                  description: "This internship will provide an opportunity to further develop consulting skills and gain additional industry experience."
                 }
               }
             }
           };
 
-          setMBASchedule(validatedSchedule);
+          setMBASchedule(parsedSchedule);
           setIsSheetOpen(true);
           
           toast({
@@ -947,4 +931,18 @@ const Index = () => {
                 </div>
 
                 <Button 
-                  type="
+                  type="submit" 
+                  className="bg-[#ea384c] hover:bg-[#d42d3d] text-white font-semibold px-6 py-3 rounded-lg flex items-center gap-2 animate-fade-in"
+                >
+                  Generate Schedule
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Index;
