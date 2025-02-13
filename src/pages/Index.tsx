@@ -312,10 +312,10 @@ const Index = () => {
         },
         body: JSON.stringify({
           inputs: {
-            program_type: MBA_Program_Type,
-            focus_area: MBA_Focus_Area,
-            professional_goals: Professional_Goals,
-            extracurricular_interests: Extracurricular_Interests
+            "MBA_Program_Type": MBA_Program_Type,
+            "MBA_Focus_Area": MBA_Focus_Area,
+            "Professional_Goals": Professional_Goals,
+            "Extracurricular_Interests": Extracurricular_Interests
           },
           response_mode: "streaming",
           user: "booth-mba-user"
