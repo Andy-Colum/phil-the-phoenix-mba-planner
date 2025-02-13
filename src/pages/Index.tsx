@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,17 @@ const Index = () => {
 
   const handleStartChat = () => {
     setChatStarted(true);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSheetOpen(true);
+    console.log("Submitted:", { 
+      programType, 
+      focusArea, 
+      professionalGoals,
+      extracurricularInterests 
+    });
   };
 
   const handleSendMessage = async (e: React.FormEvent) => {
