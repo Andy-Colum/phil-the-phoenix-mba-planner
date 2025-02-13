@@ -116,7 +116,7 @@ const Index = () => {
       <div className="w-full bg-gray-100 border-t border-gray-200 mt-8">
         <div className="container mx-auto px-4 py-6">
           <div className="max-w-3xl mx-auto text-sm text-gray-600 text-center leading-relaxed">
-            Hi, this is a website meant to showcase the functionality and potential of language models, as well as my personal interest in pursuing an MBA at Booth. This site is not intended for commercial use, nor is it an official or accurate representation of Booth in any way. It will be taken down after my interview period is over. Just a demonstration of what can be done today.
+            Hi, this is a website meant to showcase the functionality and potential of language models, as well as Andy Columbus's personal interest in pursuing an MBA at Booth. This site is not intended for commercial use, nor is it an official or accurate representation of Booth in any way. It will be taken down after Andy's interview period is over. Just a demonstration of what can be done today.
           </div>
         </div>
       </div>
