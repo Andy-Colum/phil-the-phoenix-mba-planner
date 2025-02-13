@@ -301,10 +301,11 @@ const Index = () => {
     }
 
     try {
-      const response = await fetch('https://api.dify.ai/v1/chat-messages', {
+      const API_KEY = 'app-BMVzb50wyz8hw04pC90s3Rig';
+      const response = await fetch('https://api.dify.ai/v1/workflows/run', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer app-BMVzb50wyz8hw04pC90s3Rig',
+          'Authorization': `Bearer ${API_KEY}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -314,52 +315,24 @@ const Index = () => {
             professional_goals: Professional_Goals,
             extracurricular_interests: Extracurricular_Interests
           },
-          query: `Generate a detailed MBA schedule in JSON format following this exact structure:
-          {
-            "Year_1": {
-              "Autumn": {
-                "Course_1": { "name": "string", "description": "string" },
-                "Course_2": { "name": "string", "description": "string" },
-                "Course_3": { "name": "string", "description": "string" },
-                "Club_Options": ["string"],
-                "Events": ["string"]
-              },
-              // similar for Winter, Spring, and Summer
-            },
-            "Year_2": {
-              // similar structure as Year_1
-            }
-          }
-          
-          Consider these preferences:
-          Program Type: ${MBA_Program_Type}
-          Focus Area: ${MBA_Focus_Area}
-          Professional Goals: ${Professional_Goals}
-          Extracurricular Interests: ${Extracurricular_Interests}
-          
-          Return ONLY the JSON object, no other text.`,
           response_mode: "blocking",
-          conversation_id: "",
           user: "booth-mba-user"
         })
       });
 
       if (!response.ok) {
-        throw new Error(`API responded with status: ${response.status}`);
+        const errorData = await response.json();
+        console.error('API Error:', errorData);
+        throw new Error(`API responded with status: ${response.status}, message: ${errorData.message}`);
       }
 
       const data = await response.json();
-      console.log("Dify API Response:", data);
+      console.log("Dify Workflow API Response:", data);
 
-      if (data.answer) {
+      if (data.data?.outputs) {
         try {
-          const jsonMatch = data.answer.match(/\{[\s\S]*\}/);
-          if (!jsonMatch) {
-            throw new Error('No valid JSON found in response');
-          }
-          
-          const scheduleData: MBASchedule = JSON.parse(jsonMatch[0]);
-          console.log("Parsed Schedule Data:", scheduleData);
+          const scheduleData: MBASchedule = data.data.outputs;
+          console.log("Schedule Data:", scheduleData);
           setSampleMBAData(scheduleData);
           setIsSheetOpen(true);
           
@@ -368,7 +341,7 @@ const Index = () => {
             description: "Your MBA schedule has been generated successfully!",
           });
         } catch (parseError) {
-          console.error('Error parsing JSON:', parseError);
+          console.error('Error processing schedule data:', parseError);
           toast({
             title: "Error",
             description: "Unable to process the schedule data. Please try again.",
@@ -376,13 +349,13 @@ const Index = () => {
           });
         }
       } else {
-        throw new Error('No answer received from API');
+        throw new Error('No output data received from workflow');
       }
     } catch (error) {
       console.error('Error:', error);
       toast({
         title: "Error",
-        description: "Unable to generate your MBA schedule. Please try again later.",
+        description: typeof error === 'string' ? error : "Unable to generate your MBA schedule. Please try again later.",
         variant: "destructive"
       });
     }
