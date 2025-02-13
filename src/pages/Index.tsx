@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -105,6 +106,25 @@ const Index = () => {
     }
   };
 
+  type TermData = {
+    Courses?: string[];
+    Clubs?: string[];
+    Events?: string[];
+    Internship?: string;
+  };
+
+  type YearData = {
+    Autumn: TermData;
+    Winter: TermData;
+    Spring: TermData;
+    Summer: TermData;
+  };
+
+  type MBASchedule = {
+    Year_1: YearData;
+    Year_2: YearData;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSheetOpen(true);
@@ -163,25 +183,6 @@ const Index = () => {
         variant: "destructive"
       });
     }
-  };
-
-  type TermData = {
-    Courses?: string[];
-    Clubs?: string[];
-    Events?: string[];
-    Internship?: string;
-  };
-
-  type YearData = {
-    Autumn: TermData;
-    Winter: TermData;
-    Spring: TermData;
-    Summer: TermData;
-  };
-
-  type MBASchedule = {
-    Year_1: YearData;
-    Year_2: YearData;
   };
 
   const TermBlock = ({ data, term }: { data: TermData; term: string }) => {
