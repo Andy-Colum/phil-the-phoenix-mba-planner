@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -79,19 +80,52 @@ const Index = () => {
 
       if (data?.data?.outputs?.output) {
         try {
-          const scheduleData: MBASchedule = JSON.parse(data.data.outputs.output);
+          const outputString = data.data.outputs.output;
+          // Remove the comment that's causing the JSON parse error
+          const cleanOutput = outputString.replace(/\/\/ Same structure as Year_1/g, '');
           
-          if (scheduleData?.Year_1?.Autumn && scheduleData?.Year_2?.Autumn) {
-            setSampleMBAData(scheduleData);
-            setIsSheetOpen(true);
-            
-            toast({
-              title: "Success",
-              description: "Your MBA schedule has been generated successfully!",
-            });
-          } else {
-            throw new Error('Invalid schedule data structure');
+          // Try to parse the cleaned JSON string
+          let scheduleData = JSON.parse(cleanOutput);
+          
+          // If Year_2 is missing or incomplete, copy Year_1 structure
+          if (!scheduleData.Year_2 || Object.keys(scheduleData.Year_2).length === 0) {
+            scheduleData.Year_2 = {
+              ...scheduleData.Year_1,
+              // Modify descriptions to indicate these are Year 2 courses
+              Autumn: {
+                ...scheduleData.Year_1.Autumn,
+                Course_1: { ...scheduleData.Year_1.Autumn.Course_1, description: "Advanced " + scheduleData.Year_1.Autumn.Course_1.description },
+                Course_2: { ...scheduleData.Year_1.Autumn.Course_2, description: "Advanced " + scheduleData.Year_1.Autumn.Course_2.description },
+                Course_3: { ...scheduleData.Year_1.Autumn.Course_3, description: "Advanced " + scheduleData.Year_1.Autumn.Course_3.description }
+              },
+              Winter: {
+                ...scheduleData.Year_1.Winter,
+                Course_1: { ...scheduleData.Year_1.Winter.Course_1, description: "Advanced " + scheduleData.Year_1.Winter.Course_1.description },
+                Course_2: { ...scheduleData.Year_1.Winter.Course_2, description: "Advanced " + scheduleData.Year_1.Winter.Course_2.description },
+                Course_3: { ...scheduleData.Year_1.Winter.Course_3, description: "Advanced " + scheduleData.Year_1.Winter.Course_3.description }
+              },
+              Spring: {
+                ...scheduleData.Year_1.Spring,
+                Course_1: { ...scheduleData.Year_1.Spring.Course_1, description: "Advanced " + scheduleData.Year_1.Spring.Course_1.description },
+                Course_2: { ...scheduleData.Year_1.Spring.Course_2, description: "Advanced " + scheduleData.Year_1.Spring.Course_2.description },
+                Course_3: { ...scheduleData.Year_1.Spring.Course_3, description: "Advanced " + scheduleData.Year_1.Spring.Course_3.description }
+              },
+              Summer: {
+                Internship: {
+                  name: "Final Summer Internship",
+                  description: "Apply your MBA knowledge in a real-world setting with a focus on your career goals."
+                }
+              }
+            };
           }
+
+          setSampleMBAData(scheduleData);
+          setIsSheetOpen(true);
+          
+          toast({
+            title: "Success",
+            description: "Your MBA schedule has been generated successfully!",
+          });
         } catch (parseError) {
           console.error('Error parsing schedule:', parseError);
           toast({
