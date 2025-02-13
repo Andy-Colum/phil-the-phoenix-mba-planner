@@ -60,15 +60,18 @@ const TermBlock = ({ data, term }: { data: TermData | SummerData; term: string }
               <h5 className="font-medium text-gray-700">Courses</h5>
               {Object.entries((data as TermData))
                 .filter(([key]) => key.startsWith('Course'))
-                .map(([_, course]) => (
-                  <div key={course.name} className="bg-white p-3 rounded-lg shadow-sm">
-                    <div className="flex items-center gap-2">
-                      <BookOpen className="h-4 w-4 text-[#ea384c]" />
-                      <h6 className="font-medium">{course.name}</h6>
+                .map(([key, course]) => {
+                  const typedCourse = course as CourseData;
+                  return (
+                    <div key={typedCourse.name} className="bg-white p-3 rounded-lg shadow-sm">
+                      <div className="flex items-center gap-2">
+                        <BookOpen className="h-4 w-4 text-[#ea384c]" />
+                        <h6 className="font-medium">{typedCourse.name}</h6>
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1 ml-6">{typedCourse.description}</p>
                     </div>
-                    <p className="text-sm text-gray-600 mt-1 ml-6">{course.description}</p>
-                  </div>
-                ))}
+                  );
+                })}
             </div>
             <div>
               <h5 className="font-medium text-gray-700">Clubs</h5>
