@@ -29,21 +29,39 @@ const Index = () => {
   const [professionalGoals, setProfessionalGoals] = useState("");
   const [extracurricularInterests, setExtracurricularInterests] = useState("");
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [chatMessage, setChatMessage] = useState("");
+  const [chatHistory, setChatHistory] = useState<Array<{ role: 'user' | 'assistant', content: string }>>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleStartChat = () => {
     setChatStarted(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSheetOpen(true);
-    console.log("Submitted:", { 
-      programType, 
-      focusArea, 
-      message,
-      professionalGoals,
-      extracurricularInterests 
-    });
+    if (!chatMessage.trim()) return;
+
+    const userMessage = chatMessage.trim();
+    setChatMessage("");
+    
+    // Add user message to chat history
+    setChatHistory(prev => [...prev, { role: 'user', content: userMessage }]);
+    
+    setIsLoading(true);
+    
+    try {
+      // Simulate API response for now
+      setTimeout(() => {
+        setChatHistory(prev => [...prev, { 
+          role: 'assistant', 
+          content: "Hi! I'm Phil the Phoenix, your MBA guide. I'd be happy to help you learn more about the Booth MBA experience. What would you like to know?" 
+        }]);
+        setIsLoading(false);
+      }, 1000);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -83,37 +101,66 @@ const Index = () => {
               <CardTitle className="text-2xl font-bold text-center">
                 Your MBA Journey Starts Here
               </CardTitle>
+              <p className="text-gray-700 text-center mt-2">
+                Let Phil guide you to answer any of your questions about MBA or Booth.
+              </p>
             </CardHeader>
             <CardContent className="space-y-6">
-              <p className="text-gray-700 text-center">
-                Let Phil the Phoenix guide you through your personalized Booth MBA experience.
-              </p>
-              <div className="flex justify-center">
-                <Button 
-                  onClick={handleStartChat}
-                  className="bg-[#ea384c] hover:bg-[#d42d3d] text-white font-semibold px-6 py-3 rounded-lg flex items-center gap-2 animate-fade-in"
-                >
-                  Talk to Phil
-                  <MessageSquare className="h-5 w-5" />
-                </Button>
-              </div>
-              <div className="space-y-4 pt-4">
-                <h3 className="text-lg font-semibold text-gray-800">Why Choose Booth?</h3>
-                <ul className="space-y-3 text-gray-700">
-                  <li className="flex items-center gap-2">
-                    <GraduationCap className="h-5 w-5 text-[#ea384c]" />
-                    World-renowned faculty and research
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Target className="h-5 w-5 text-[#ea384c]" />
-                    Flexible curriculum tailored to your goals
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Globe className="h-5 w-5 text-[#ea384c]" />
-                    Global network and opportunities
-                  </li>
-                </ul>
-              </div>
+              {!chatStarted ? (
+                <div className="flex justify-center">
+                  <Button 
+                    onClick={handleStartChat}
+                    className="bg-[#ea384c] hover:bg-[#d42d3d] text-white font-semibold px-6 py-3 rounded-lg flex items-center gap-2 animate-fade-in"
+                  >
+                    Talk to Phil
+                    <MessageSquare className="h-5 w-5" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="h-[400px] overflow-y-auto p-4 space-y-4 border rounded-lg">
+                    {chatHistory.map((msg, index) => (
+                      <div
+                        key={index}
+                        className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                      >
+                        <div
+                          className={`max-w-[80%] p-3 rounded-lg ${
+                            msg.role === 'user'
+                              ? 'bg-[#ea384c] text-white ml-4'
+                              : 'bg-gray-100 text-gray-800 mr-4'
+                          }`}
+                        >
+                          {msg.content}
+                        </div>
+                      </div>
+                    ))}
+                    {isLoading && (
+                      <div className="flex justify-start">
+                        <div className="bg-gray-100 text-gray-800 p-3 rounded-lg">
+                          Phil is typing...
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <form onSubmit={handleSendMessage} className="flex gap-2">
+                    <Input
+                      value={chatMessage}
+                      onChange={(e) => setChatMessage(e.target.value)}
+                      placeholder="Type your question here..."
+                      className="flex-1"
+                    />
+                    <Button 
+                      type="submit" 
+                      className="bg-[#ea384c] hover:bg-[#d42d3d] text-white"
+                      disabled={isLoading}
+                    >
+                      <ArrowRight className="h-5 w-5" />
+                    </Button>
+                  </form>
+                </div>
+              )}
             </CardContent>
           </Card>
 
