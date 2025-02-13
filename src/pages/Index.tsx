@@ -5,11 +5,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useToast } from "@/components/ui/use-toast";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { supabase } from "@/lib/supabase";
-import { GraduationCap, Moon, Sun, Briefcase, MessageSquare, ArrowRight } from "lucide-react";
+import { 
+  GraduationCap, 
+  Moon, 
+  Sun, 
+  Briefcase, 
+  MessageSquare, 
+  ArrowRight,
+  BookOpen,
+  Users,
+  Calendar,
+  Loader
+} from "lucide-react";
 import { jsPDF } from "jspdf";
-import { TermBlock } from "@/components/TermBlock";
-import { MBASchedule, defaultMBASchedule, YearData } from "@/types/mba";
+import { MBASchedule, defaultMBASchedule, YearData, TermData, SummerData, CourseData } from "@/types/mba";
 
 const Index = () => {
   const { toast } = useToast();
